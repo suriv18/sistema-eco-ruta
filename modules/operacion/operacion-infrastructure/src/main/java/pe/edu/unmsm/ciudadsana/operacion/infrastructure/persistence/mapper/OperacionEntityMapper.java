@@ -263,7 +263,6 @@ public interface OperacionEntityMapper {
         e.setHoraFin(h.getHoraFin());
         e.setObservacion(h.getObservacion());
         e.setEstado(h.getEstado().name());
-        e.setActualizadoEn(Instant.now());
         return e;
     }
 }

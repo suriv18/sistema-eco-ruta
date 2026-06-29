@@ -29,17 +29,6 @@ public class ObtenerHorarioQueryHandler implements ObtenerHorarioUseCase {
             TenantId.of(query.tenantId())
         );
         if (opt.isEmpty()) return Result.failure(ErrorCode.HORARIO_NO_ENCONTRADO);
-        HorarioRecoleccion h = opt.get();
-        return Result.success(new HorarioResponseDto(
-            h.getId().value(),
-            h.getTenantId().value(),
-            h.getZonaId().value(),
-            h.getDiaSemana(),
-            h.getHoraInicio(),
-            h.getHoraFin(),
-            h.getObservacion(),
-            h.getEstado().name(),
-            h.getCreadoEn()
-        ));
+        return Result.success(HorarioResponseDto.from(opt.get()));
     }
 }

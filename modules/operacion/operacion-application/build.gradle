@@ -3,4 +3,5 @@ dependencies {
     api project(':shared:shared-kernel')
     api project(':shared:shared-result')
     implementation 'org.springframework:spring-context'
+    implementation 'org.springframework:spring-tx'
 }

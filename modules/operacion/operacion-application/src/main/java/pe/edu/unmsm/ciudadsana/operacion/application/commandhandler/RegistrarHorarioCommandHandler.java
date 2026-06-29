@@ -1,6 +1,7 @@
 package pe.edu.unmsm.ciudadsana.operacion.application.commandhandler;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import pe.edu.unmsm.ciudadsana.operacion.application.command.RegistrarHorarioCommand;
 import pe.edu.unmsm.ciudadsana.operacion.application.dto.HorarioResponseDto;
 import pe.edu.unmsm.ciudadsana.operacion.application.port.in.RegistrarHorarioUseCase;
@@ -28,43 +29,29 @@ public class RegistrarHorarioCommandHandler implements RegistrarHorarioUseCase {
     }
 
     @Override
-    public Result<HorarioResponseDto> registrar(RegistrarHorarioCommand command) {
-        TenantId tenantId = TenantId.of(command.tenantId());
-        ZonaId zonaId = ZonaId.of(command.zonaId());
-        if (horariosPersistencePort.existsByZonaAndDiaAndHorario(zonaId, command.diaSemana(), command.horaInicio(), command.horaFin(), tenantId)) {
+    @Transactional
+    public Result<HorarioResponseDto> registrar(RegistrarHorarioCommand cmd) {
+        TenantId tenantId = TenantId.of(cmd.tenantId());
+        ZonaId zonaId = ZonaId.of(cmd.zonaId());
+        if (horariosPersistencePort.existsByZonaAndDiaAndHorario(zonaId, cmd.diaSemana(), cmd.horaInicio(), cmd.horaFin(), tenantId)) {
             return Result.failure(ErrorCode.HORARIO_DUPLICADO, "Ya existe un horario con los mismos datos para esta zona");
         }
-        HorarioRecoleccion horario;
-        try {
-            horario = HorarioRecoleccion.create(
-                HorarioRecoleccionId.of(UUID.randomUUID()),
-                tenantId,
-                zonaId,
-                command.diaSemana(),
-                command.horaInicio(),
-                command.horaFin(),
-                command.observacion(),
-                Instant.now()
-            );
-        } catch (IllegalArgumentException e) {
-            return Result.failure(ErrorCode.HORARIO_RANGO_INVALIDO, e.getMessage());
+        if (cmd.horaFin() != null && cmd.horaInicio() != null && !cmd.horaFin().isAfter(cmd.horaInicio())) {
+            return Result.failure(ErrorCode.HORARIO_RANGO_INVALIDO);
         }
-        horario = horariosPersistencePort.save(horario);
-        eventPublisher.publishAll(horario.pullDomainEvents());
-        return Result.success(toDto(horario));
-    }
-
-    private HorarioResponseDto toDto(HorarioRecoleccion h) {
-        return new HorarioResponseDto(
-            h.getId().value(),
-            h.getTenantId().value(),
-            h.getZonaId().value(),
-            h.getDiaSemana(),
-            h.getHoraInicio(),
-            h.getHoraFin(),
-            h.getObservacion(),
-            h.getEstado().name(),
-            h.getCreadoEn()
+        HorarioRecoleccion horario = HorarioRecoleccion.create(
+            HorarioRecoleccionId.of(UUID.randomUUID()),
+            tenantId,
+            zonaId,
+            cmd.diaSemana(),
+            cmd.horaInicio(),
+            cmd.horaFin(),
+            cmd.observacion(),
+            Instant.now()
         );
+        var eventos = horario.pullDomainEvents();
+        HorarioRecoleccion guardado = horariosPersistencePort.save(horario);
+        eventPublisher.publishAll(eventos);
+        return Result.success(HorarioResponseDto.from(guardado));
     }
 }

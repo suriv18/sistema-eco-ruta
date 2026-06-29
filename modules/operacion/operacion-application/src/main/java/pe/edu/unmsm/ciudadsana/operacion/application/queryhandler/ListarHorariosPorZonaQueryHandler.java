@@ -28,17 +28,7 @@ public class ListarHorariosPorZonaQueryHandler implements ListarHorariosPorZonaU
             query.page(),
             query.size()
         );
-        PageResult<HorarioResponseDto> mappedPage = pageResult.map(h -> new HorarioResponseDto(
-            h.getId().value(),
-            h.getTenantId().value(),
-            h.getZonaId().value(),
-            h.getDiaSemana(),
-            h.getHoraInicio(),
-            h.getHoraFin(),
-            h.getObservacion(),
-            h.getEstado().name(),
-            h.getCreadoEn()
-        ));
+        PageResult<HorarioResponseDto> mappedPage = pageResult.map(HorarioResponseDto::from);
         return Result.success(mappedPage);
     }
 }
