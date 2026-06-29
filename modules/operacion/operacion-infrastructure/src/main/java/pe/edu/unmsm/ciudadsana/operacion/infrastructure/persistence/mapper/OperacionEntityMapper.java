@@ -6,6 +6,7 @@ import pe.edu.unmsm.ciudadsana.operacion.domain.enums.EstadoContenedor;
 import pe.edu.unmsm.ciudadsana.operacion.domain.enums.EstadoChofer;
 import pe.edu.unmsm.ciudadsana.operacion.domain.enums.EstadoDeposito;
 import pe.edu.unmsm.ciudadsana.operacion.domain.enums.EstadoDistrito;
+import pe.edu.unmsm.ciudadsana.operacion.domain.enums.EstadoHorario;
 import pe.edu.unmsm.ciudadsana.operacion.domain.enums.EstadoOperativoUnidad;
 import pe.edu.unmsm.ciudadsana.operacion.domain.enums.EstadoZona;
 import pe.edu.unmsm.ciudadsana.operacion.domain.enums.EstadoTurno;
@@ -17,6 +18,7 @@ import pe.edu.unmsm.ciudadsana.operacion.domain.model.Chofer;
 import pe.edu.unmsm.ciudadsana.operacion.domain.model.Contenedor;
 import pe.edu.unmsm.ciudadsana.operacion.domain.model.Deposito;
 import pe.edu.unmsm.ciudadsana.operacion.domain.model.Distrito;
+import pe.edu.unmsm.ciudadsana.operacion.domain.model.HorarioRecoleccion;
 import pe.edu.unmsm.ciudadsana.operacion.domain.model.Turno;
 import pe.edu.unmsm.ciudadsana.operacion.domain.model.Unidad;
 import pe.edu.unmsm.ciudadsana.operacion.domain.model.Zona;
@@ -27,6 +29,7 @@ import pe.edu.unmsm.ciudadsana.operacion.domain.valueobject.CodigoZona;
 import pe.edu.unmsm.ciudadsana.operacion.domain.valueobject.ContenedorId;
 import pe.edu.unmsm.ciudadsana.operacion.domain.valueobject.DepositoId;
 import pe.edu.unmsm.ciudadsana.operacion.domain.valueobject.DistritoId;
+import pe.edu.unmsm.ciudadsana.operacion.domain.valueobject.HorarioRecoleccionId;
 import pe.edu.unmsm.ciudadsana.operacion.domain.valueobject.Placa;
 import pe.edu.unmsm.ciudadsana.operacion.domain.valueobject.PrioridadBase;
 import pe.edu.unmsm.ciudadsana.operacion.domain.valueobject.TurnoId;
@@ -36,6 +39,7 @@ import pe.edu.unmsm.ciudadsana.operacion.infrastructure.persistence.entity.Chofe
 import pe.edu.unmsm.ciudadsana.operacion.infrastructure.persistence.entity.ContenedorJpaEntity;
 import pe.edu.unmsm.ciudadsana.operacion.infrastructure.persistence.entity.DepositoJpaEntity;
 import pe.edu.unmsm.ciudadsana.operacion.infrastructure.persistence.entity.DistritoJpaEntity;
+import pe.edu.unmsm.ciudadsana.operacion.infrastructure.persistence.entity.HorarioRecoleccionJpaEntity;
 import pe.edu.unmsm.ciudadsana.operacion.infrastructure.persistence.entity.TurnoJpaEntity;
 import pe.edu.unmsm.ciudadsana.operacion.infrastructure.persistence.entity.UnidadJpaEntity;
 import pe.edu.unmsm.ciudadsana.operacion.infrastructure.persistence.entity.ZonaJpaEntity;
@@ -230,6 +234,35 @@ public interface OperacionEntityMapper {
         e.setHoraFin(t.getHoraFin());
         e.setTipoTurno(t.getTipo().name());
         e.setEstado(t.getEstado().name());
+        e.setActualizadoEn(Instant.now());
+        return e;
+    }
+
+    default HorarioRecoleccion toDomain(HorarioRecoleccionJpaEntity e) {
+        return HorarioRecoleccion.reconstitute(
+                HorarioRecoleccionId.of(e.getId()),
+                TenantId.of(e.getTenantId()),
+                ZonaId.of(e.getZonaId()),
+                e.getDiaSemana(),
+                e.getHoraInicio(),
+                e.getHoraFin(),
+                e.getObservacion(),
+                EstadoHorario.valueOf(e.getEstado()),
+                e.getCreadoEn(),
+                e.getActualizadoEn()
+        );
+    }
+
+    default HorarioRecoleccionJpaEntity toEntity(HorarioRecoleccion h) {
+        HorarioRecoleccionJpaEntity e = new HorarioRecoleccionJpaEntity();
+        e.setId(h.getId().value());
+        e.setTenantId(h.getTenantId().value());
+        e.setZonaId(h.getZonaId().value());
+        e.setDiaSemana(h.getDiaSemana());
+        e.setHoraInicio(h.getHoraInicio());
+        e.setHoraFin(h.getHoraFin());
+        e.setObservacion(h.getObservacion());
+        e.setEstado(h.getEstado().name());
         e.setActualizadoEn(Instant.now());
         return e;
     }

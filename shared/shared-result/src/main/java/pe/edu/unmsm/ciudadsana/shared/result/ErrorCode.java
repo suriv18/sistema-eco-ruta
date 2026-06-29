@@ -30,6 +30,9 @@ public enum ErrorCode {
     TURNO_SUPERPUESTO("El turno se superpone con otro ya registrado"),
     CAPACIDAD_EXCEDIDA("La capacidad de la unidad sería excedida"),
     VENTANA_HORARIA_INVALIDA("La ventana horaria es inválida (fin debe ser posterior a inicio)"),
+    HORARIO_NO_ENCONTRADO("Horario de recolección no encontrado"),
+    HORARIO_DUPLICADO("Ya existe un horario de recolección con los mismos datos"),
+    HORARIO_RANGO_INVALIDO("El rango horario es inválido (fin debe ser posterior a inicio)"),
 
     // Ciudadano
     ALERTA_NO_ENCONTRADA("Alerta no encontrada"),
