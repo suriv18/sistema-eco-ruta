@@ -1,50 +1,60 @@
 services:
-  postgres:
-    image: postgis/postgis:17-3.5
-    container_name: ciudad-sana-postgres
-    environment:
-      POSTGRES_DB: ciudad_sana
-      POSTGRES_USER: ciudadsana
-      POSTGRES_PASSWORD: ciudadsana
+
+  # ─── PostgreSQL + PostGIS ─────────────────────────────────────────────────
+  db:
+    image: postgis/postgis:16-3.4-alpine
+    container_name: ciudad-sana-db
+    restart: unless-stopped
     ports:
-      - "5432:5432"
+      - "15432:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ciudad_sana}
+      POSTGRES_USER: ${POSTGRES_USER:-ciudadsana}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ciudadsana}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ciudad_sana_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ciudadsana -d ciudad_sana"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ciudadsana} -d ${POSTGRES_DB:-ciudad_sana}"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 20s
+    networks:
+      - ciudad-sana-net
 
-  ciudad-sana-api:
+  # ─── Spring Boot Backend ──────────────────────────────────────────────────
+  backend:
     build:
       context: .
       dockerfile: apps/ciudad-sana-api/Dockerfile
+    image: ciudad-sana-api:latest
     container_name: ciudad-sana-api
+    restart: unless-stopped
     ports:
-      - "${SERVER_PORT:-8080}:8080"
+      - "18080:18080"
     environment:
-      APP_PROFILE: dev
-      DB_URL: jdbc:postgresql://postgres:5432/ciudad_sana
-      DB_USERNAME: ciudadsana
-      DB_PASSWORD: ciudadsana
-      JWT_SECRET: ${JWT_SECRET}
-      OPTIMIZATION_SERVICE_URL: http://service-optimization:8000
+      SERVER_PORT: 18080
+      APP_PROFILE: docker
+      DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-ciudad_sana}
+      DB_USERNAME: ${POSTGRES_USER:-ciudadsana}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-ciudadsana}
+      JWT_SECRET: ${JWT_SECRET:-must-be-at-least-256-bits-secret-key-for-hmac-sha}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-3600000}
+      JWT_REFRESH_EXPIRATION_MS: ${JWT_REFRESH_EXPIRATION_MS:-604800000}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:3000}
+      OPTIMIZATION_SERVICE_URL: ${OPTIMIZATION_SERVICE_URL:-http://localhost:8000}
+      OSRM_SERVICE_URL: ${OSRM_SERVICE_URL:-http://router.project-osrm.org}
     depends_on:
-      postgres:
+      db:
         condition: service_healthy
-    profiles:
-      - full
-
-  service-optimization:
-    build:
-      context: ../service-optimization
-      dockerfile: Dockerfile
-    container_name: service-optimization
-    ports:
-      - "8000:8000"
-    profiles:
-      - full
+    networks:
+      - ciudad-sana-net
 
 volumes:
-  postgres_data:
+  ciudad_sana_pgdata:
+    name: ciudad_sana_pgdata
+
+networks:
+  ciudad-sana-net:
+    name: ciudad-sana-net
+    driver: bridge

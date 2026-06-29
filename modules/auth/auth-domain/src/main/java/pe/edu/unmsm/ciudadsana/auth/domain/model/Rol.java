@@ -6,8 +6,8 @@ public class Rol {
 
     private final RolId id;
     private final String codigo;
-    private final String nombre;
-    private final String descripcion;
+    private String nombre;
+    private String descripcion;
     private boolean activo;
 
     private Rol(RolId id, String codigo, String nombre, String descripcion, boolean activo) {
@@ -27,6 +27,16 @@ public class Rol {
 
     public static Rol reconstitute(RolId id, String codigo, String nombre, String descripcion, boolean activo) {
         return new Rol(id, codigo, nombre, descripcion, activo);
+    }
+
+    public void actualizar(String nombre, String descripcion) {
+        if (nombre == null || nombre.isBlank()) throw new IllegalArgumentException("El nombre del rol no puede ser nulo o vacío");
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+    }
+
+    public void desactivar() {
+        this.activo = false;
     }
 
     public RolId getId() {

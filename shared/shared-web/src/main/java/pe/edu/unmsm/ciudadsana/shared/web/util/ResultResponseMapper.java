@@ -58,7 +58,7 @@ public final class ResultResponseMapper {
                  "TURNO_NO_ENCONTRADO", "ROL_NO_ENCONTRADO", "RECURSO_NO_ENCONTRADO",
                  "HORARIO_NO_ENCONTRADO" -> HttpStatus.NOT_FOUND;
             case "USUARIO_YA_EXISTE", "ALERTA_DUPLICADA", "TURNO_SUPERPUESTO",
-                 "HORARIO_DUPLICADO" -> HttpStatus.CONFLICT;
+                 "HORARIO_DUPLICADO", "ROL_DUPLICADO" -> HttpStatus.CONFLICT;
             case "HORARIO_RANGO_INVALIDO" -> HttpStatus.UNPROCESSABLE_ENTITY;
             case "VALIDACION_ERROR", "GEOMETRIA_INVALIDA", "VENTANA_HORARIA_INVALIDA",
                  "ARGUMENTO_INVALIDO" -> HttpStatus.BAD_REQUEST;

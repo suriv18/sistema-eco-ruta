@@ -69,4 +69,14 @@ public interface UsuarioEntityMapper {
                 "ACTIVO".equals(entity.getEstado())
         );
     }
+
+    default RolJpaEntity rolToEntity(Rol rol) {
+        RolJpaEntity entity = new RolJpaEntity();
+        entity.setId(rol.getId().value());
+        entity.setCodigo(rol.getCodigo());
+        entity.setNombre(rol.getNombre());
+        entity.setDescripcion(rol.getDescripcion());
+        entity.setEstado(rol.isActivo() ? "ACTIVO" : "INACTIVO");
+        return entity;
+    }
 }
