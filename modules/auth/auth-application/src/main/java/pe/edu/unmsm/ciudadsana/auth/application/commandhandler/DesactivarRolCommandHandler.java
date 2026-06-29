@@ -1,6 +1,7 @@
 package pe.edu.unmsm.ciudadsana.auth.application.commandhandler;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import pe.edu.unmsm.ciudadsana.auth.application.port.in.DesactivarRolUseCase;
 import pe.edu.unmsm.ciudadsana.auth.application.port.out.RolPersistencePort;
 import pe.edu.unmsm.ciudadsana.auth.domain.model.Rol;
@@ -20,6 +21,7 @@ public class DesactivarRolCommandHandler implements DesactivarRolUseCase {
         this.rolPort = rolPort;
     }
 
+    @Transactional
     @Override
     public Result<Void> desactivar(UUID rolId) {
         Optional<Rol> rolOpt = rolPort.findById(RolId.of(rolId));

@@ -1,6 +1,7 @@
 package pe.edu.unmsm.ciudadsana.auth.application.commandhandler;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import pe.edu.unmsm.ciudadsana.auth.application.command.ActualizarRolCommand;
 import pe.edu.unmsm.ciudadsana.auth.application.dto.RolResponseDto;
 import pe.edu.unmsm.ciudadsana.auth.application.port.in.ActualizarRolUseCase;
@@ -21,6 +22,7 @@ public class ActualizarRolCommandHandler implements ActualizarRolUseCase {
         this.rolPort = rolPort;
     }
 
+    @Transactional
     @Override
     public Result<RolResponseDto> actualizar(ActualizarRolCommand command) {
         Optional<Rol> rolOpt = rolPort.findById(RolId.of(command.rolId()));

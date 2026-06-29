@@ -1,6 +1,7 @@
 package pe.edu.unmsm.ciudadsana.auth.application.commandhandler;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import pe.edu.unmsm.ciudadsana.auth.application.command.CrearPermisoCommand;
 import pe.edu.unmsm.ciudadsana.auth.application.dto.PermisoResponseDto;
 import pe.edu.unmsm.ciudadsana.auth.application.port.in.CrearPermisoUseCase;
@@ -21,6 +22,7 @@ public class CrearPermisoCommandHandler implements CrearPermisoUseCase {
         this.permisoPort = permisoPort;
     }
 
+    @Transactional
     @Override
     public Result<PermisoResponseDto> crear(CrearPermisoCommand command) {
         if (permisoPort.existsByCodigo(command.codigo())) {

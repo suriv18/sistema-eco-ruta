@@ -1,6 +1,7 @@
 package pe.edu.unmsm.ciudadsana.auth.application.commandhandler;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import pe.edu.unmsm.ciudadsana.auth.application.command.CrearRolCommand;
 import pe.edu.unmsm.ciudadsana.auth.application.dto.RolResponseDto;
 import pe.edu.unmsm.ciudadsana.auth.application.port.in.CrearRolUseCase;
@@ -26,6 +27,7 @@ public class CrearRolCommandHandler implements CrearRolUseCase {
         this.eventPublisher = eventPublisher;
     }
 
+    @Transactional
     @Override
     public Result<RolResponseDto> crear(CrearRolCommand command) {
         if (rolPort.existsByCodigo(command.codigo())) {

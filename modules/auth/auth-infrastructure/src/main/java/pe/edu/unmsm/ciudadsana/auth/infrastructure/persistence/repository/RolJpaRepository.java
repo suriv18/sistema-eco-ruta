@@ -14,4 +14,6 @@ public interface RolJpaRepository extends JpaRepository<RolJpaEntity, UUID> {
     boolean existsByCodigo(String codigo);
 
     List<RolJpaEntity> findAllByIdIn(List<UUID> ids);
+
+    boolean existsByIdAndPermisosIdsContains(UUID rolId, UUID permisoId);
 }
