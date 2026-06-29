@@ -1,0 +1,8 @@
+dependencies {
+    implementation project(':modules:integracion:integracion-application')
+    implementation project(':modules:integracion:integracion-domain')
+    implementation project(':shared:shared-kernel')
+    implementation project(':shared:shared-result')
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation project(':shared:shared-testing')
+}

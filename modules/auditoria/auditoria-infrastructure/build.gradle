@@ -1,0 +1,12 @@
+dependencies {
+    implementation project(':modules:auditoria:auditoria-application')
+    implementation project(':modules:auditoria:auditoria-domain')
+    implementation project(':shared:shared-kernel')
+    implementation project(':shared:shared-result')
+    implementation project(':shared:shared-persistence')
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    runtimeOnly 'org.postgresql:postgresql'
+    testImplementation project(':shared:shared-testing')
+    testImplementation 'org.testcontainers:postgresql'
+}

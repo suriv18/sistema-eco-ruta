@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgis/postgis:17-3.5
+    container_name: ciudad-sana-postgres
+    environment:
+      POSTGRES_DB: ciudad_sana
+      POSTGRES_USER: ciudadsana
+      POSTGRES_PASSWORD: ciudadsana
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ciudadsana -d ciudad_sana"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ciudad-sana-api:
+    build:
+      context: .
+      dockerfile: apps/ciudad-sana-api/Dockerfile
+    container_name: ciudad-sana-api
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+    environment:
+      APP_PROFILE: dev
+      DB_URL: jdbc:postgresql://postgres:5432/ciudad_sana
+      DB_USERNAME: ciudadsana
+      DB_PASSWORD: ciudadsana
+      JWT_SECRET: ${JWT_SECRET}
+      OPTIMIZATION_SERVICE_URL: http://service-optimization:8000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - full
+
+  service-optimization:
+    build:
+      context: ../service-optimization
+      dockerfile: Dockerfile
+    container_name: service-optimization
+    ports:
+      - "8000:8000"
+    profiles:
+      - full
+
+volumes:
+  postgres_data:

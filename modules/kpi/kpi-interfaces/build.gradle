@@ -1,0 +1,13 @@
+dependencies {
+    implementation project(':modules:kpi:kpi-application')
+    implementation project(':shared:shared-kernel')
+    implementation project(':shared:shared-result')
+    implementation project(':shared:shared-web')
+    implementation project(':shared:shared-security')
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
+    testImplementation project(':shared:shared-testing')
+}

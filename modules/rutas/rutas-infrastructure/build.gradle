@@ -1,0 +1,14 @@
+dependencies {
+    implementation project(':modules:rutas:rutas-application')
+    implementation project(':modules:rutas:rutas-domain')
+    implementation project(':modules:integracion:integracion-infrastructure')
+    implementation project(':shared:shared-kernel')
+    implementation project(':shared:shared-result')
+    implementation project(':shared:shared-persistence')
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    runtimeOnly 'org.postgresql:postgresql'
+    testImplementation project(':shared:shared-testing')
+    testImplementation 'org.testcontainers:postgresql'
+}

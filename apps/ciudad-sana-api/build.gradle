@@ -1,0 +1,86 @@
+plugins {
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+        mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
+    }
+}
+
+dependencies {
+    // Shared
+    implementation project(':shared:shared-kernel')
+    implementation project(':shared:shared-result')
+    implementation project(':shared:shared-web')
+    implementation project(':shared:shared-security')
+    implementation project(':shared:shared-persistence')
+
+    // Modules - infrastructure (wires adapters)
+    implementation project(':modules:auth:auth-infrastructure')
+    implementation project(':modules:auth:auth-interfaces')
+    implementation project(':modules:operacion:operacion-infrastructure')
+    implementation project(':modules:operacion:operacion-interfaces')
+    implementation project(':modules:telemetria:telemetria-infrastructure')
+    implementation project(':modules:telemetria:telemetria-interfaces')
+    implementation project(':modules:ciudadano:ciudadano-infrastructure')
+    implementation project(':modules:ciudadano:ciudadano-interfaces')
+    implementation project(':modules:integracion:integracion-infrastructure')
+    implementation project(':modules:integracion:integracion-interfaces')
+    implementation project(':modules:rutas:rutas-infrastructure')
+    implementation project(':modules:rutas:rutas-interfaces')
+    implementation project(':modules:kpi:kpi-infrastructure')
+    implementation project(':modules:kpi:kpi-interfaces')
+    implementation project(':modules:auditoria:auditoria-infrastructure')
+    implementation project(':modules:auditoria:auditoria-interfaces')
+
+    // Spring Boot starters
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // Flyway
+    implementation "org.flywaydb:flyway-core:${flywayVersion}"
+    implementation "org.flywaydb:flyway-database-postgresql:${flywayVersion}"
+
+    // JWT
+    implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
+
+    // OpenAPI
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
+
+    // MapStruct
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+    // Database
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // Lombok
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    // Test
+    testImplementation project(':shared:shared-testing')
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:postgresql'
+    testImplementation "com.tngtech.archunit:archunit-junit5:${archunitVersion}"
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+bootJar {
+    archiveFileName = 'ciudad-sana-api.jar'
+}
+
+springBoot {
+    mainClass = 'pe.edu.unmsm.ciudadsana.CiudadSanaApplication'
+}

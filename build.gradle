@@ -1,0 +1,70 @@
+plugins {
+    id 'java-library'
+    id 'org.springframework.boot'            version "${springBootVersion}"            apply false
+    id 'io.spring.dependency-management'     version "${springDependencyManagementVersion}" apply false
+}
+
+allprojects {
+    group   = project.findProperty('group')
+    version = project.findProperty('version')
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'io.spring.dependency-management'
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+            mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
+        }
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(project.findProperty('javaVersion') as int)
+        }
+        withSourcesJar()
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.compilerArgs += ['--enable-preview']
+        options.encoding = 'UTF-8'
+    }
+
+    tasks.withType(Test).configureEach {
+        jvmArgs '--enable-preview'
+        useJUnitPlatform()
+    }
+
+    tasks.withType(JavaExec).configureEach {
+        jvmArgs '--enable-preview'
+    }
+
+    dependencies {
+        compileOnly "org.projectlombok:lombok:${lombokVersion}"
+        annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+        testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+        testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+        testImplementation "org.mockito:mockito-junit-jupiter:5.16.1"
+        testImplementation 'org.assertj:assertj-core'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    }
+}
+
+// Extra dependencies only for infra and interfaces layers
+def infraAndInterfaceModules = subprojects.findAll {
+    it.name.endsWith('-infrastructure') || it.name.endsWith('-interfaces')
+}
+
+configure(infraAndInterfaceModules) {
+    dependencies {
+        annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    }
+}

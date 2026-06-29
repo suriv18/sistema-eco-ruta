@@ -1,0 +1,14 @@
+dependencies {
+    implementation project(':modules:auth:auth-application')
+    implementation project(':modules:auth:auth-domain')
+    implementation project(':shared:shared-kernel')
+    implementation project(':shared:shared-result')
+    implementation project(':shared:shared-persistence')
+    implementation project(':shared:shared-security')
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    runtimeOnly 'org.postgresql:postgresql'
+    testImplementation project(':shared:shared-testing')
+    testImplementation 'org.testcontainers:postgresql'
+}

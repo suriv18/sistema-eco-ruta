@@ -1,0 +1,6 @@
+dependencies {
+    api project(':modules:auditoria:auditoria-domain')
+    api project(':shared:shared-kernel')
+    api project(':shared:shared-result')
+    implementation 'org.springframework:spring-context'
+}

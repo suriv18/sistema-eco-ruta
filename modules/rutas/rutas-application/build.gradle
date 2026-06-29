@@ -1,0 +1,7 @@
+dependencies {
+    api project(':modules:rutas:rutas-domain')
+    api project(':modules:integracion:integracion-application')
+    api project(':shared:shared-kernel')
+    api project(':shared:shared-result')
+    implementation 'org.springframework:spring-context'
+}

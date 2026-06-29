@@ -1,0 +1,62 @@
+rootProject.name = 'service-ciudad-sana'
+
+include(
+    // Bootstrap
+    'apps:ciudad-sana-api',
+
+    // Shared
+    'shared:shared-kernel',
+    'shared:shared-result',
+    'shared:shared-web',
+    'shared:shared-security',
+    'shared:shared-persistence',
+    'shared:shared-testing',
+
+    // Auth
+    'modules:auth:auth-domain',
+    'modules:auth:auth-application',
+    'modules:auth:auth-infrastructure',
+    'modules:auth:auth-interfaces',
+
+    // Operacion
+    'modules:operacion:operacion-domain',
+    'modules:operacion:operacion-application',
+    'modules:operacion:operacion-infrastructure',
+    'modules:operacion:operacion-interfaces',
+
+    // Telemetria
+    'modules:telemetria:telemetria-domain',
+    'modules:telemetria:telemetria-application',
+    'modules:telemetria:telemetria-infrastructure',
+    'modules:telemetria:telemetria-interfaces',
+
+    // Ciudadano
+    'modules:ciudadano:ciudadano-domain',
+    'modules:ciudadano:ciudadano-application',
+    'modules:ciudadano:ciudadano-infrastructure',
+    'modules:ciudadano:ciudadano-interfaces',
+
+    // Rutas
+    'modules:rutas:rutas-domain',
+    'modules:rutas:rutas-application',
+    'modules:rutas:rutas-infrastructure',
+    'modules:rutas:rutas-interfaces',
+
+    // Integracion
+    'modules:integracion:integracion-domain',
+    'modules:integracion:integracion-application',
+    'modules:integracion:integracion-infrastructure',
+    'modules:integracion:integracion-interfaces',
+
+    // Kpi
+    'modules:kpi:kpi-domain',
+    'modules:kpi:kpi-application',
+    'modules:kpi:kpi-infrastructure',
+    'modules:kpi:kpi-interfaces',
+
+    // Auditoria
+    'modules:auditoria:auditoria-domain',
+    'modules:auditoria:auditoria-application',
+    'modules:auditoria:auditoria-infrastructure',
+    'modules:auditoria:auditoria-interfaces'
+)

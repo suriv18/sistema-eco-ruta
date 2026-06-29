@@ -1,0 +1,8 @@
+dependencies {
+    api project(':shared:shared-kernel')
+    api project(':shared:shared-result')
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation "org.flywaydb:flyway-core:${flywayVersion}"
+    implementation "org.flywaydb:flyway-database-postgresql:${flywayVersion}"
+    runtimeOnly 'org.postgresql:postgresql'
+}

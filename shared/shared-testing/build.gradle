@@ -1,0 +1,8 @@
+dependencies {
+    api project(':shared:shared-kernel')
+    api project(':shared:shared-result')
+    api 'org.springframework.boot:spring-boot-starter-test'
+    api 'org.testcontainers:junit-jupiter'
+    api 'org.testcontainers:postgresql'
+    api "com.tngtech.archunit:archunit-junit5:${archunitVersion}"
+}
