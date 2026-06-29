@@ -21,10 +21,6 @@ public class ListarRolesQueryHandler implements ListarRolesUseCase {
     @Override
     public Result<PageResult<RolResponseDto>> listar(ListarRolesQuery query) {
         PageResult<Rol> page = rolPort.findAll(query.page(), query.size());
-        return Result.success(page.map(this::toDto));
-    }
-
-    private RolResponseDto toDto(Rol rol) {
-        return new RolResponseDto(rol.getId().value(), rol.getCodigo(), rol.getNombre(), rol.getDescripcion(), rol.isActivo());
+        return Result.success(page.map(RolResponseDto::from));
     }
 }

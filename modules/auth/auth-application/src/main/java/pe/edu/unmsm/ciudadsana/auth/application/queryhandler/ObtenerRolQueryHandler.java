@@ -27,10 +27,6 @@ public class ObtenerRolQueryHandler implements ObtenerRolUseCase {
         if (rolOpt.isEmpty()) {
             return Result.failure(ErrorCode.ROL_NO_ENCONTRADO);
         }
-        return Result.success(toDto(rolOpt.get()));
-    }
-
-    private RolResponseDto toDto(Rol rol) {
-        return new RolResponseDto(rol.getId().value(), rol.getCodigo(), rol.getNombre(), rol.getDescripcion(), rol.isActivo());
+        return Result.success(RolResponseDto.from(rolOpt.get()));
     }
 }

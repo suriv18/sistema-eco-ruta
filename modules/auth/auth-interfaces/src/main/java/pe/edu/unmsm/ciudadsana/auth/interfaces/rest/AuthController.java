@@ -74,7 +74,7 @@ public class AuthController {
 
     @Operation(summary = "Cerrar sesión")
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout(@Valid @RequestBody RefreshTokenRequest request) {
+    public ResponseEntity<Void> logout(@Valid @RequestBody RefreshTokenRequest request) {
         AuthenticatedUser user = currentUserProvider.requireCurrentUser();
         LogoutCommand command = new LogoutCommand(user.usuarioId(), request.refreshToken());
         return ResultResponseMapper.toNoContent(logoutUseCase.logout(command));

@@ -74,7 +74,7 @@ public class UnidadController {
     @Operation(summary = "Cambiar estado operativo")
     @PreAuthorize("hasAnyRole('ADMIN','SUPERVISOR')")
     @PatchMapping("/{id}/estado")
-    public ResponseEntity<ApiResponse<Void>> cambiarEstado(@PathVariable UUID id,
+    public ResponseEntity<Void> cambiarEstado(@PathVariable UUID id,
                                                             @Valid @RequestBody CambiarEstadoUnidadRequest req) {
         var user = currentUser.requireCurrentUser();
         return ResultResponseMapper.toNoContent(cambiarEstadoUseCase.cambiarEstado(new CambiarEstadoUnidadCommand(id, user.tenantId(), req.nuevoEstado())));

@@ -1,8 +1,12 @@
 package pe.edu.unmsm.ciudadsana.auth.domain.model;
 
+import pe.edu.unmsm.ciudadsana.auth.domain.event.RolCreadoEvent;
 import pe.edu.unmsm.ciudadsana.auth.domain.valueobject.RolId;
+import pe.edu.unmsm.ciudadsana.shared.kernel.domain.model.AggregateRoot;
 
-public class Rol {
+import java.time.Instant;
+
+public class Rol extends AggregateRoot<RolId> {
 
     private final RolId id;
     private final String codigo;
@@ -22,7 +26,9 @@ public class Rol {
         if (id == null) throw new IllegalArgumentException("RolId no puede ser nulo");
         if (codigo == null || codigo.isBlank()) throw new IllegalArgumentException("El código del rol no puede ser nulo o vacío");
         if (nombre == null || nombre.isBlank()) throw new IllegalArgumentException("El nombre del rol no puede ser nulo o vacío");
-        return new Rol(id, codigo, nombre, descripcion, true);
+        Rol rol = new Rol(id, codigo, nombre, descripcion, true);
+        rol.recordDomainEvent(new RolCreadoEvent(id.value(), Instant.now(), codigo, nombre));
+        return rol;
     }
 
     public static Rol reconstitute(RolId id, String codigo, String nombre, String descripcion, boolean activo) {
@@ -39,6 +45,7 @@ public class Rol {
         this.activo = false;
     }
 
+    @Override
     public RolId getId() {
         return id;
     }

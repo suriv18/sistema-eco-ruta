@@ -100,7 +100,7 @@ public class RolController {
     @Operation(summary = "Desactivar rol")
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{rolId}/desactivar")
-    public ResponseEntity<ApiResponse<Void>> desactivar(@PathVariable UUID rolId) {
+    public ResponseEntity<Void> desactivar(@PathVariable UUID rolId) {
         return ResultResponseMapper.toNoContent(desactivarUseCase.desactivar(rolId));
     }
 }

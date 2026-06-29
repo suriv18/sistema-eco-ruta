@@ -11,5 +11,7 @@ public interface RolJpaRepository extends JpaRepository<RolJpaEntity, UUID> {
 
     Optional<RolJpaEntity> findByCodigo(String codigo);
 
+    boolean existsByCodigo(String codigo);
+
     List<RolJpaEntity> findAllByIdIn(List<UUID> ids);
 }

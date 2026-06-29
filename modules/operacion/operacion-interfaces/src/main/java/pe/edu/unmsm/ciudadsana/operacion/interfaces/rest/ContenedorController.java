@@ -61,7 +61,7 @@ public class ContenedorController {
     @Operation(summary = "Cambiar estado de contenedor")
     @PreAuthorize("hasAnyRole('ADMIN','SUPERVISOR','OPERADOR')")
     @PatchMapping("/{id}/estado")
-    public ResponseEntity<ApiResponse<Void>> cambiarEstado(@PathVariable UUID id,
+    public ResponseEntity<Void> cambiarEstado(@PathVariable UUID id,
                                                             @Valid @RequestBody CambiarEstadoContenedorRequest req) {
         var user = currentUser.requireCurrentUser();
         return ResultResponseMapper.toNoContent(cambiarEstadoUseCase.cambiarEstado(new CambiarEstadoContenedorCommand(id, user.tenantId(), req.nuevoEstado())));

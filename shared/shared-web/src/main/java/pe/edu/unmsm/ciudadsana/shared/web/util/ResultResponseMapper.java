@@ -27,10 +27,10 @@ public final class ResultResponseMapper {
         };
     }
 
-    public static <T> ResponseEntity<ApiResponse<Void>> toNoContent(Result<T> result) {
+    public static <T> ResponseEntity<Void> toNoContent(Result<T> result) {
         return switch (result) {
-            case Result.Success<T> ignored -> ResponseEntity.ok(ApiResponse.noContent());
-            case Result.Failure<T> f      -> toErrorResponse(f);
+            case Result.Success<T> ignored -> ResponseEntity.noContent().build();
+            case Result.Failure<T> f      -> ResponseEntity.status(resolveHttpStatus(f.error().code().name())).build();
         };
     }
 

@@ -78,7 +78,7 @@ public class TurnoController {
     @Operation(summary = "Iniciar turno")
     @PreAuthorize("hasAnyRole('ADMIN','SUPERVISOR','OPERADOR')")
     @PatchMapping("/{id}/iniciar")
-    public ResponseEntity<ApiResponse<Void>> iniciar(@PathVariable UUID id) {
+    public ResponseEntity<Void> iniciar(@PathVariable UUID id) {
         var user = currentUser.requireCurrentUser();
         return ResultResponseMapper.toNoContent(iniciarUseCase.iniciar(new IniciarTurnoCommand(id, user.tenantId())));
     }
@@ -86,7 +86,7 @@ public class TurnoController {
     @Operation(summary = "Finalizar turno")
     @PreAuthorize("hasAnyRole('ADMIN','SUPERVISOR','OPERADOR')")
     @PatchMapping("/{id}/finalizar")
-    public ResponseEntity<ApiResponse<Void>> finalizar(@PathVariable UUID id) {
+    public ResponseEntity<Void> finalizar(@PathVariable UUID id) {
         var user = currentUser.requireCurrentUser();
         return ResultResponseMapper.toNoContent(finalizarUseCase.finalizar(new FinalizarTurnoCommand(id, user.tenantId())));
     }

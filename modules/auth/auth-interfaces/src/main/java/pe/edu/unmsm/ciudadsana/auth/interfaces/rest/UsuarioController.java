@@ -90,7 +90,7 @@ public class UsuarioController {
     @Operation(summary = "Bloquear usuario")
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{usuarioId}/bloquear")
-    public ResponseEntity<ApiResponse<Void>> bloquear(@PathVariable UUID usuarioId) {
+    public ResponseEntity<Void> bloquear(@PathVariable UUID usuarioId) {
         AuthenticatedUser user = currentUserProvider.requireCurrentUser();
         BloquearUsuarioCommand command = new BloquearUsuarioCommand(usuarioId, user.tenantId());
         return ResultResponseMapper.toNoContent(bloquearUseCase.bloquear(command));
@@ -99,7 +99,7 @@ public class UsuarioController {
     @Operation(summary = "Activar usuario")
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{usuarioId}/activar")
-    public ResponseEntity<ApiResponse<Void>> activar(@PathVariable UUID usuarioId) {
+    public ResponseEntity<Void> activar(@PathVariable UUID usuarioId) {
         AuthenticatedUser user = currentUserProvider.requireCurrentUser();
         ActivarUsuarioCommand command = new ActivarUsuarioCommand(usuarioId, user.tenantId());
         return ResultResponseMapper.toNoContent(activarUseCase.activar(command));
@@ -108,7 +108,7 @@ public class UsuarioController {
     @Operation(summary = "Asignar rol a usuario")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{usuarioId}/roles")
-    public ResponseEntity<ApiResponse<Void>> asignarRol(
+    public ResponseEntity<Void> asignarRol(
             @PathVariable UUID usuarioId,
             @Valid @RequestBody AsignarRolRequest request
     ) {

@@ -6,13 +6,13 @@ import pe.edu.unmsm.ciudadsana.auth.application.dto.RolResponseDto;
 import pe.edu.unmsm.ciudadsana.auth.application.port.in.CrearRolUseCase;
 import pe.edu.unmsm.ciudadsana.auth.application.port.out.EventPublisherPort;
 import pe.edu.unmsm.ciudadsana.auth.application.port.out.RolPersistencePort;
-import pe.edu.unmsm.ciudadsana.auth.domain.event.RolCreadoEvent;
 import pe.edu.unmsm.ciudadsana.auth.domain.model.Rol;
 import pe.edu.unmsm.ciudadsana.auth.domain.valueobject.RolId;
+import pe.edu.unmsm.ciudadsana.shared.kernel.domain.event.DomainEvent;
 import pe.edu.unmsm.ciudadsana.shared.result.ErrorCode;
 import pe.edu.unmsm.ciudadsana.shared.result.Result;
 
-import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -32,12 +32,9 @@ public class CrearRolCommandHandler implements CrearRolUseCase {
             return Result.failure(ErrorCode.ROL_DUPLICADO);
         }
         Rol rol = Rol.create(RolId.of(UUID.randomUUID()), command.codigo(), command.nombre(), command.descripcion());
+        List<DomainEvent> eventos = rol.pullDomainEvents();
         Rol saved = rolPort.save(rol);
-        eventPublisher.publish(new RolCreadoEvent(saved.getId().value(), Instant.now(), saved.getCodigo(), saved.getNombre()));
-        return Result.success(toDto(saved));
-    }
-
-    private RolResponseDto toDto(Rol rol) {
-        return new RolResponseDto(rol.getId().value(), rol.getCodigo(), rol.getNombre(), rol.getDescripcion(), rol.isActivo());
+        eventPublisher.publishAll(eventos);
+        return Result.success(RolResponseDto.from(saved));
     }
 }

@@ -30,10 +30,6 @@ public class ActualizarRolCommandHandler implements ActualizarRolUseCase {
         Rol rol = rolOpt.get();
         rol.actualizar(command.nombre(), command.descripcion());
         Rol saved = rolPort.save(rol);
-        return Result.success(toDto(saved));
-    }
-
-    private RolResponseDto toDto(Rol rol) {
-        return new RolResponseDto(rol.getId().value(), rol.getCodigo(), rol.getNombre(), rol.getDescripcion(), rol.isActivo());
+        return Result.success(RolResponseDto.from(saved));
     }
 }

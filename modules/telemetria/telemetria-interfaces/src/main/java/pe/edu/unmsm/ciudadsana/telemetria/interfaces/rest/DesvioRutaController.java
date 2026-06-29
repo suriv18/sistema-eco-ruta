@@ -78,7 +78,7 @@ public class DesvioRutaController {
     @Operation(summary = "Atender desvío de ruta")
     @PreAuthorize("hasAnyRole('ADMIN','SUPERVISOR','OPERADOR')")
     @PatchMapping("/{id}/atender")
-    public ResponseEntity<ApiResponse<Void>> atender(@PathVariable UUID id) {
+    public ResponseEntity<Void> atender(@PathVariable UUID id) {
         var user = currentUser.requireCurrentUser();
         return ResultResponseMapper.toNoContent(atenderUseCase.atender(new AtenderDesvioCommand(id, user.tenantId())));
     }
@@ -86,7 +86,7 @@ public class DesvioRutaController {
     @Operation(summary = "Descartar desvío de ruta")
     @PreAuthorize("hasAnyRole('ADMIN','SUPERVISOR')")
     @PatchMapping("/{id}/descartar")
-    public ResponseEntity<ApiResponse<Void>> descartar(@PathVariable UUID id) {
+    public ResponseEntity<Void> descartar(@PathVariable UUID id) {
         var user = currentUser.requireCurrentUser();
         return ResultResponseMapper.toNoContent(descartarUseCase.descartar(new DescartarDesvioCommand(id, user.tenantId())));
     }

@@ -59,6 +59,6 @@ public class RolPersistenceAdapter implements RolPersistencePort {
 
     @Override
     public boolean existsByCodigo(String codigo) {
-        return rolRepo.findByCodigo(codigo).isPresent();
+        return rolRepo.existsByCodigo(codigo);
     }
 }

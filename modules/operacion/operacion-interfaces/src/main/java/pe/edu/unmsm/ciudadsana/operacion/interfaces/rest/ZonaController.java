@@ -73,7 +73,7 @@ public class ZonaController {
     @Operation(summary = "Desactivar zona")
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/desactivar")
-    public ResponseEntity<ApiResponse<Void>> desactivar(@PathVariable UUID id) {
+    public ResponseEntity<Void> desactivar(@PathVariable UUID id) {
         var user = currentUser.requireCurrentUser();
         return ResultResponseMapper.toNoContent(desactivarUseCase.desactivar(new DesactivarZonaCommand(id, user.tenantId())));
     }
