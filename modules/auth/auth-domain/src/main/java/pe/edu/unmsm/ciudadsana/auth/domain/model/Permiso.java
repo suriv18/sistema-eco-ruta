@@ -23,6 +23,10 @@ public class Permiso {
         return new Permiso(id, codigo, modulo, descripcion);
     }
 
+    public static Permiso reconstitute(PermisoId id, String codigo, String modulo, String descripcion) {
+        return new Permiso(id, codigo, modulo, descripcion);
+    }
+
     public PermisoId getId() {
         return id;
     }

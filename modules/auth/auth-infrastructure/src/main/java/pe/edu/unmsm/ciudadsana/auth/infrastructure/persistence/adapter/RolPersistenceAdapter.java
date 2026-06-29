@@ -13,6 +13,7 @@ import pe.edu.unmsm.ciudadsana.shared.result.PageResult;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class RolPersistenceAdapter implements RolPersistencePort {
@@ -60,5 +61,21 @@ public class RolPersistenceAdapter implements RolPersistencePort {
     @Override
     public boolean existsByCodigo(String codigo) {
         return rolRepo.existsByCodigo(codigo);
+    }
+
+    @Override
+    public void asignarPermiso(UUID rolId, UUID permisoId) {
+        rolRepo.findById(rolId).ifPresent(rol -> {
+            rol.getPermisosIds().add(permisoId);
+            rolRepo.save(rol);
+        });
+    }
+
+    @Override
+    public void quitarPermiso(UUID rolId, UUID permisoId) {
+        rolRepo.findById(rolId).ifPresent(rol -> {
+            rol.getPermisosIds().remove(permisoId);
+            rolRepo.save(rol);
+        });
     }
 }

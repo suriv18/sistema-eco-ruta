@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,16 +16,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pe.edu.unmsm.ciudadsana.auth.application.command.ActualizarRolCommand;
+import pe.edu.unmsm.ciudadsana.auth.application.command.AsignarPermisoARolCommand;
 import pe.edu.unmsm.ciudadsana.auth.application.command.CrearRolCommand;
+import pe.edu.unmsm.ciudadsana.auth.application.command.QuitarPermisoDeRolCommand;
 import pe.edu.unmsm.ciudadsana.auth.application.dto.RolResponseDto;
 import pe.edu.unmsm.ciudadsana.auth.application.port.in.ActualizarRolUseCase;
+import pe.edu.unmsm.ciudadsana.auth.application.port.in.AsignarPermisoARolUseCase;
 import pe.edu.unmsm.ciudadsana.auth.application.port.in.CrearRolUseCase;
 import pe.edu.unmsm.ciudadsana.auth.application.port.in.DesactivarRolUseCase;
 import pe.edu.unmsm.ciudadsana.auth.application.port.in.ListarRolesUseCase;
 import pe.edu.unmsm.ciudadsana.auth.application.port.in.ObtenerRolUseCase;
+import pe.edu.unmsm.ciudadsana.auth.application.port.in.QuitarPermisoDeRolUseCase;
 import pe.edu.unmsm.ciudadsana.auth.application.query.ListarRolesQuery;
 import pe.edu.unmsm.ciudadsana.auth.application.query.ObtenerRolQuery;
 import pe.edu.unmsm.ciudadsana.auth.interfaces.rest.request.ActualizarRolRequest;
+import pe.edu.unmsm.ciudadsana.auth.interfaces.rest.request.AsignarPermisoRequest;
 import pe.edu.unmsm.ciudadsana.auth.interfaces.rest.request.CrearRolRequest;
 import pe.edu.unmsm.ciudadsana.shared.result.PageResult;
 import pe.edu.unmsm.ciudadsana.shared.web.response.ApiResponse;
@@ -42,19 +48,25 @@ public class RolController {
     private final ListarRolesUseCase listarUseCase;
     private final ObtenerRolUseCase obtenerUseCase;
     private final DesactivarRolUseCase desactivarUseCase;
+    private final AsignarPermisoARolUseCase asignarPermisoUseCase;
+    private final QuitarPermisoDeRolUseCase quitarPermisoUseCase;
 
     public RolController(
             CrearRolUseCase crearUseCase,
             ActualizarRolUseCase actualizarUseCase,
             ListarRolesUseCase listarUseCase,
             ObtenerRolUseCase obtenerUseCase,
-            DesactivarRolUseCase desactivarUseCase
+            DesactivarRolUseCase desactivarUseCase,
+            AsignarPermisoARolUseCase asignarPermisoUseCase,
+            QuitarPermisoDeRolUseCase quitarPermisoUseCase
     ) {
         this.crearUseCase = crearUseCase;
         this.actualizarUseCase = actualizarUseCase;
         this.listarUseCase = listarUseCase;
         this.obtenerUseCase = obtenerUseCase;
         this.desactivarUseCase = desactivarUseCase;
+        this.asignarPermisoUseCase = asignarPermisoUseCase;
+        this.quitarPermisoUseCase = quitarPermisoUseCase;
     }
 
     @Operation(summary = "Crear rol")
@@ -102,5 +114,27 @@ public class RolController {
     @PatchMapping("/{rolId}/desactivar")
     public ResponseEntity<Void> desactivar(@PathVariable UUID rolId) {
         return ResultResponseMapper.toNoContent(desactivarUseCase.desactivar(rolId));
+    }
+
+    @Operation(summary = "Asignar permiso a rol")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/{rolId}/permisos")
+    public ResponseEntity<Void> asignarPermiso(
+            @PathVariable UUID rolId,
+            @Valid @RequestBody AsignarPermisoRequest request
+    ) {
+        AsignarPermisoARolCommand command = new AsignarPermisoARolCommand(rolId, request.permisoId());
+        return ResultResponseMapper.toNoContent(asignarPermisoUseCase.asignar(command));
+    }
+
+    @Operation(summary = "Quitar permiso de rol")
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{rolId}/permisos/{permisoId}")
+    public ResponseEntity<Void> quitarPermiso(
+            @PathVariable UUID rolId,
+            @PathVariable UUID permisoId
+    ) {
+        QuitarPermisoDeRolCommand command = new QuitarPermisoDeRolCommand(rolId, permisoId);
+        return ResultResponseMapper.toNoContent(quitarPermisoUseCase.quitar(command));
     }
 }

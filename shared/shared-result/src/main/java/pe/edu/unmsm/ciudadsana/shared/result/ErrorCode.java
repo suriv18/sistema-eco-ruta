@@ -14,6 +14,8 @@ public enum ErrorCode {
     REFRESH_TOKEN_INVALIDO("Refresh token inválido o expirado"),
     ROL_NO_ENCONTRADO("Rol no encontrado"),
     ROL_DUPLICADO("Ya existe un rol con ese código"),
+    PERMISO_NO_ENCONTRADO("Permiso no encontrado"),
+    PERMISO_DUPLICADO("Ya existe un permiso con ese código"),
 
     // Operacion
     ZONA_NO_ENCONTRADA("Zona no encontrada"),

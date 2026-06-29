@@ -4,14 +4,17 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import pe.edu.unmsm.ciudadsana.auth.domain.enums.EstadoUsuario;
+import pe.edu.unmsm.ciudadsana.auth.domain.model.Permiso;
 import pe.edu.unmsm.ciudadsana.auth.domain.model.Rol;
 import pe.edu.unmsm.ciudadsana.auth.domain.model.Usuario;
 import pe.edu.unmsm.ciudadsana.auth.domain.valueobject.Email;
 import pe.edu.unmsm.ciudadsana.auth.domain.valueobject.NombresCompletos;
 import pe.edu.unmsm.ciudadsana.auth.domain.valueobject.PasswordHash;
+import pe.edu.unmsm.ciudadsana.auth.domain.valueobject.PermisoId;
 import pe.edu.unmsm.ciudadsana.auth.domain.valueobject.RolId;
 import pe.edu.unmsm.ciudadsana.auth.domain.valueobject.UsuarioId;
 import pe.edu.unmsm.ciudadsana.auth.domain.valueobject.Username;
+import pe.edu.unmsm.ciudadsana.auth.infrastructure.persistence.entity.PermisoJpaEntity;
 import pe.edu.unmsm.ciudadsana.auth.infrastructure.persistence.entity.RolJpaEntity;
 import pe.edu.unmsm.ciudadsana.auth.infrastructure.persistence.entity.UsuarioJpaEntity;
 import pe.edu.unmsm.ciudadsana.shared.kernel.domain.valueobject.TenantId;
@@ -77,6 +80,24 @@ public interface UsuarioEntityMapper {
         entity.setNombre(rol.getNombre());
         entity.setDescripcion(rol.getDescripcion());
         entity.setEstado(rol.isActivo() ? "ACTIVO" : "INACTIVO");
+        return entity;
+    }
+
+    default Permiso permisoDomain(PermisoJpaEntity entity) {
+        return Permiso.reconstitute(
+                PermisoId.of(entity.getId()),
+                entity.getCodigo(),
+                entity.getModulo(),
+                entity.getDescripcion()
+        );
+    }
+
+    default PermisoJpaEntity permisoToEntity(Permiso permiso) {
+        PermisoJpaEntity entity = new PermisoJpaEntity();
+        entity.setId(permiso.getId().value());
+        entity.setCodigo(permiso.getCodigo());
+        entity.setModulo(permiso.getModulo());
+        entity.setDescripcion(permiso.getDescripcion());
         return entity;
     }
 }
