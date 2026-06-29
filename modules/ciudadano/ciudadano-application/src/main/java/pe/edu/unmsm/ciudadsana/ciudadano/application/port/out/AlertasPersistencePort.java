@@ -12,5 +12,6 @@ public interface AlertasPersistencePort {
     Optional<AlertaCiudadana> findByIdAndTenantId(AlertaId id, TenantId tenantId);
     PageResult<AlertaCiudadana> findAllByTenantId(TenantId tenantId, String estado, int page, int size);
     PageResult<AlertaCiudadana> findAllByZonaAndTenantId(ZonaExternoId zonaId, TenantId tenantId, int page, int size);
+    PageResult<AlertaCiudadana> findCriticasByTenant(TenantId tenantId, int page, int size);
     AlertaCiudadana save(AlertaCiudadana alerta);
 }

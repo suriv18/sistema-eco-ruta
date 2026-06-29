@@ -17,4 +17,6 @@ public interface AlertaCiudadanaJpaRepository extends JpaRepository<AlertaCiudad
     Page<AlertaCiudadanaJpaEntity> findAllByTenantId(UUID tenantId, Pageable pageable);
 
     Page<AlertaCiudadanaJpaEntity> findAllByZonaIdExternoAndTenantId(UUID zonaIdExterno, UUID tenantId, Pageable pageable);
+
+    Page<AlertaCiudadanaJpaEntity> findAllByTenantIdAndNivelCriticidad(UUID tenantId, String nivelCriticidad, Pageable pageable);
 }

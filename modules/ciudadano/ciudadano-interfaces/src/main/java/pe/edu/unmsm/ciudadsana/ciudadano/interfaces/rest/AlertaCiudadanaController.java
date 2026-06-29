@@ -13,11 +13,13 @@ import pe.edu.unmsm.ciudadsana.ciudadano.application.command.ValidarAlertaComman
 import pe.edu.unmsm.ciudadsana.ciudadano.application.dto.AlertaResponseDto;
 import pe.edu.unmsm.ciudadsana.ciudadano.application.port.in.AgregarFotoAlertaUseCase;
 import pe.edu.unmsm.ciudadsana.ciudadano.application.port.in.CambiarEstadoAlertaUseCase;
+import pe.edu.unmsm.ciudadsana.ciudadano.application.port.in.ListarAlertasCriticasUseCase;
 import pe.edu.unmsm.ciudadsana.ciudadano.application.port.in.ListarAlertasPorZonaUseCase;
 import pe.edu.unmsm.ciudadsana.ciudadano.application.port.in.ListarAlertasUseCase;
 import pe.edu.unmsm.ciudadsana.ciudadano.application.port.in.ObtenerAlertaUseCase;
 import pe.edu.unmsm.ciudadsana.ciudadano.application.port.in.RegistrarAlertaUseCase;
 import pe.edu.unmsm.ciudadsana.ciudadano.application.port.in.ValidarAlertaUseCase;
+import pe.edu.unmsm.ciudadsana.ciudadano.application.query.ListarAlertasCriticasQuery;
 import pe.edu.unmsm.ciudadsana.ciudadano.application.query.ListarAlertasPorZonaQuery;
 import pe.edu.unmsm.ciudadsana.ciudadano.application.query.ListarAlertasQuery;
 import pe.edu.unmsm.ciudadsana.ciudadano.application.query.ObtenerAlertaQuery;
@@ -44,6 +46,7 @@ public class AlertaCiudadanaController {
     private final ObtenerAlertaUseCase obtenerUseCase;
     private final ListarAlertasUseCase listarUseCase;
     private final ListarAlertasPorZonaUseCase listarPorZonaUseCase;
+    private final ListarAlertasCriticasUseCase listarAlertasCriticasUseCase;
     private final CurrentUserProvider currentUser;
 
     public AlertaCiudadanaController(RegistrarAlertaUseCase registrarUseCase,
@@ -53,6 +56,7 @@ public class AlertaCiudadanaController {
                                       ObtenerAlertaUseCase obtenerUseCase,
                                       ListarAlertasUseCase listarUseCase,
                                       ListarAlertasPorZonaUseCase listarPorZonaUseCase,
+                                      ListarAlertasCriticasUseCase listarAlertasCriticasUseCase,
                                       CurrentUserProvider currentUser) {
         this.registrarUseCase = registrarUseCase;
         this.agregarFotoUseCase = agregarFotoUseCase;
@@ -61,6 +65,7 @@ public class AlertaCiudadanaController {
         this.obtenerUseCase = obtenerUseCase;
         this.listarUseCase = listarUseCase;
         this.listarPorZonaUseCase = listarPorZonaUseCase;
+        this.listarAlertasCriticasUseCase = listarAlertasCriticasUseCase;
         this.currentUser = currentUser;
     }
 
@@ -137,5 +142,16 @@ public class AlertaCiudadanaController {
             @RequestParam(defaultValue = "20") int size) {
         var user = currentUser.requireCurrentUser();
         return ResultResponseMapper.toOk(listarPorZonaUseCase.listarPorZona(new ListarAlertasPorZonaQuery(zonaId, user.tenantId(), page, size)));
+    }
+
+    @GetMapping("/criticas")
+    @Operation(summary = "Listar alertas críticas")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPERVISOR','OPERADOR')")
+    public ResponseEntity<ApiResponse<PageResult<AlertaResponseDto>>> listarCriticas(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        var user = currentUser.requireCurrentUser();
+        ListarAlertasCriticasQuery query = new ListarAlertasCriticasQuery(user.tenantId(), page, size);
+        return ResultResponseMapper.toOk(listarAlertasCriticasUseCase.listar(query));
     }
 }

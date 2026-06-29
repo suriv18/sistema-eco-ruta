@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import pe.edu.unmsm.ciudadsana.ciudadano.application.port.out.AlertasPersistencePort;
+import pe.edu.unmsm.ciudadsana.ciudadano.domain.enums.NivelCriticidad;
 import pe.edu.unmsm.ciudadsana.ciudadano.domain.model.AlertaCiudadana;
 import pe.edu.unmsm.ciudadsana.ciudadano.domain.valueobject.AlertaId;
 import pe.edu.unmsm.ciudadsana.ciudadano.domain.valueobject.ZonaExternoId;
@@ -89,6 +90,21 @@ public class AlertasPersistenceAdapter implements AlertasPersistencePort {
         } else {
             p = alertaRepo.findAllByTenantId(tenantId.value(), PageRequest.of(page, size));
         }
+        List<AlertaCiudadana> content = p.getContent().stream()
+                .map(e -> {
+                    List<AlertaFotoJpaEntity> fotos = fotoRepo.findAllByAlertaId(e.getId());
+                    List<AlertaHistorialJpaEntity> historial = historialRepo.findAllByAlertaIdOrderByCambiadoEnAsc(e.getId());
+                    Optional<ValidacionAlertaJpaEntity> validacion = validacionRepo.findByAlertaId(e.getId());
+                    return mapper.toDomain(e, fotos, historial, validacion);
+                })
+                .toList();
+        return PageResult.of(content, page, size, p.getTotalElements());
+    }
+
+    @Override
+    public PageResult<AlertaCiudadana> findCriticasByTenant(TenantId tenantId, int page, int size) {
+        Page<AlertaCiudadanaJpaEntity> p = alertaRepo.findAllByTenantIdAndNivelCriticidad(
+                tenantId.value(), NivelCriticidad.CRITICA.name(), PageRequest.of(page, size));
         List<AlertaCiudadana> content = p.getContent().stream()
                 .map(e -> {
                     List<AlertaFotoJpaEntity> fotos = fotoRepo.findAllByAlertaId(e.getId());
