@@ -17,4 +17,5 @@ public interface RolPersistencePort {
     boolean existsByCodigo(String codigo);
     void asignarPermiso(UUID rolId, UUID permisoId);
     void quitarPermiso(UUID rolId, UUID permisoId);
+    boolean tienePermiso(UUID rolId, UUID permisoId);
 }

@@ -1,6 +1,7 @@
 package pe.edu.unmsm.ciudadsana.auth.application.commandhandler;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import pe.edu.unmsm.ciudadsana.auth.application.command.QuitarPermisoDeRolCommand;
 import pe.edu.unmsm.ciudadsana.auth.application.port.in.QuitarPermisoDeRolUseCase;
 import pe.edu.unmsm.ciudadsana.auth.application.port.out.PermisoPersistencePort;
@@ -22,6 +23,7 @@ public class QuitarPermisoDeRolCommandHandler implements QuitarPermisoDeRolUseCa
     }
 
     @Override
+    @Transactional
     public Result<Void> quitar(QuitarPermisoDeRolCommand command) {
         if (rolPort.findById(RolId.of(command.rolId())).isEmpty()) {
             return Result.failure(ErrorCode.ROL_NO_ENCONTRADO);

@@ -78,4 +78,11 @@ public class RolPersistenceAdapter implements RolPersistencePort {
             rolRepo.save(rol);
         });
     }
+
+    @Override
+    public boolean tienePermiso(UUID rolId, UUID permisoId) {
+        return rolRepo.findById(rolId)
+                .map(rol -> rol.getPermisosIds().contains(permisoId))
+                .orElse(false);
+    }
 }
