@@ -6,13 +6,18 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import pe.edu.unmsm.ciudadsana.operacion.application.command.ActualizarHorarioCommand;
+import pe.edu.unmsm.ciudadsana.operacion.application.command.DesactivarHorarioCommand;
 import pe.edu.unmsm.ciudadsana.operacion.application.command.RegistrarHorarioCommand;
 import pe.edu.unmsm.ciudadsana.operacion.application.dto.HorarioResponseDto;
+import pe.edu.unmsm.ciudadsana.operacion.application.port.in.ActualizarHorarioUseCase;
+import pe.edu.unmsm.ciudadsana.operacion.application.port.in.DesactivarHorarioUseCase;
 import pe.edu.unmsm.ciudadsana.operacion.application.port.in.ListarHorariosPorZonaUseCase;
 import pe.edu.unmsm.ciudadsana.operacion.application.port.in.ObtenerHorarioUseCase;
 import pe.edu.unmsm.ciudadsana.operacion.application.port.in.RegistrarHorarioUseCase;
 import pe.edu.unmsm.ciudadsana.operacion.application.query.ListarHorariosPorZonaQuery;
 import pe.edu.unmsm.ciudadsana.operacion.application.query.ObtenerHorarioQuery;
+import pe.edu.unmsm.ciudadsana.operacion.interfaces.rest.request.ActualizarHorarioRequest;
 import pe.edu.unmsm.ciudadsana.operacion.interfaces.rest.request.RegistrarHorarioRequest;
 import pe.edu.unmsm.ciudadsana.shared.result.PageResult;
 import pe.edu.unmsm.ciudadsana.shared.security.context.CurrentUserProvider;
@@ -27,15 +32,21 @@ import java.util.UUID;
 public class HorarioRecoleccionController {
 
     private final RegistrarHorarioUseCase registrarUseCase;
+    private final ActualizarHorarioUseCase actualizarUseCase;
+    private final DesactivarHorarioUseCase desactivarUseCase;
     private final ObtenerHorarioUseCase obtenerUseCase;
     private final ListarHorariosPorZonaUseCase listarUseCase;
     private final CurrentUserProvider currentUser;
 
     public HorarioRecoleccionController(RegistrarHorarioUseCase registrarUseCase,
+                                         ActualizarHorarioUseCase actualizarUseCase,
+                                         DesactivarHorarioUseCase desactivarUseCase,
                                          ObtenerHorarioUseCase obtenerUseCase,
                                          ListarHorariosPorZonaUseCase listarUseCase,
                                          CurrentUserProvider currentUser) {
         this.registrarUseCase = registrarUseCase;
+        this.actualizarUseCase = actualizarUseCase;
+        this.desactivarUseCase = desactivarUseCase;
         this.obtenerUseCase = obtenerUseCase;
         this.listarUseCase = listarUseCase;
         this.currentUser = currentUser;
@@ -48,6 +59,25 @@ public class HorarioRecoleccionController {
         var user = currentUser.requireCurrentUser();
         var command = new RegistrarHorarioCommand(user.tenantId(), req.zonaId(), req.diaSemana(), req.horaInicio(), req.horaFin(), req.observacion());
         return ResultResponseMapper.toCreated(registrarUseCase.registrar(command));
+    }
+
+    @Operation(summary = "Actualizar horario de recolección")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPERVISOR')")
+    @PutMapping("/{horarioId}")
+    public ResponseEntity<ApiResponse<HorarioResponseDto>> actualizar(
+            @PathVariable UUID horarioId,
+            @Valid @RequestBody ActualizarHorarioRequest req) {
+        var user = currentUser.requireCurrentUser();
+        var command = new ActualizarHorarioCommand(user.tenantId(), horarioId, req.horaInicio(), req.horaFin(), req.observacion());
+        return ResultResponseMapper.toOk(actualizarUseCase.actualizar(command));
+    }
+
+    @Operation(summary = "Desactivar horario de recolección")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPERVISOR')")
+    @DeleteMapping("/{horarioId}")
+    public ResponseEntity<Void> desactivar(@PathVariable UUID horarioId) {
+        var user = currentUser.requireCurrentUser();
+        return ResultResponseMapper.toNoContent(desactivarUseCase.desactivar(new DesactivarHorarioCommand(user.tenantId(), horarioId)));
     }
 
     @Operation(summary = "Obtener horario de recolección")

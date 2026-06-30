@@ -16,9 +16,9 @@ public class HorarioRecoleccion extends AggregateRoot<HorarioRecoleccionId> {
     private final TenantId tenantId;
     private final ZonaId zonaId;
     private final int diaSemana;
-    private final LocalTime horaInicio;
-    private final LocalTime horaFin;
-    private final String observacion;
+    private LocalTime horaInicio;
+    private LocalTime horaFin;
+    private String observacion;
     private EstadoHorario estado;
     private final Instant creadoEn;
     private Instant actualizadoEn;
@@ -63,9 +63,18 @@ public class HorarioRecoleccion extends AggregateRoot<HorarioRecoleccionId> {
                 observacion, estado, creadoEn, actualizadoEn);
     }
 
+    public void actualizar(LocalTime horaInicio, LocalTime horaFin, String observacion) {
+        if (!horaFin.isAfter(horaInicio)) throw new IllegalArgumentException("horaFin debe ser posterior a horaInicio");
+        this.horaInicio = horaInicio;
+        this.horaFin = horaFin;
+        this.observacion = observacion;
+        this.actualizadoEn = Instant.now();
+    }
+
     public void desactivar() {
         if (estado == EstadoHorario.INACTIVO) throw new IllegalStateException("El horario ya está INACTIVO");
         estado = EstadoHorario.INACTIVO;
+        this.actualizadoEn = Instant.now();
     }
 
     @Override
