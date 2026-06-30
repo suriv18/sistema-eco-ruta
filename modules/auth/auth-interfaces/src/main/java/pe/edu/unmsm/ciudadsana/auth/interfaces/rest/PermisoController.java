@@ -8,17 +8,21 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import pe.edu.unmsm.ciudadsana.auth.application.command.ActualizarPermisoCommand;
 import pe.edu.unmsm.ciudadsana.auth.application.command.CrearPermisoCommand;
 import pe.edu.unmsm.ciudadsana.auth.application.dto.PermisoResponseDto;
+import pe.edu.unmsm.ciudadsana.auth.application.port.in.ActualizarPermisoUseCase;
 import pe.edu.unmsm.ciudadsana.auth.application.port.in.CrearPermisoUseCase;
 import pe.edu.unmsm.ciudadsana.auth.application.port.in.ListarPermisosUseCase;
 import pe.edu.unmsm.ciudadsana.auth.application.port.in.ObtenerPermisoUseCase;
 import pe.edu.unmsm.ciudadsana.auth.application.query.ListarPermisosQuery;
 import pe.edu.unmsm.ciudadsana.auth.application.query.ObtenerPermisoQuery;
+import pe.edu.unmsm.ciudadsana.auth.interfaces.rest.request.ActualizarPermisoRequest;
 import pe.edu.unmsm.ciudadsana.auth.interfaces.rest.request.CrearPermisoRequest;
 import pe.edu.unmsm.ciudadsana.shared.result.PageResult;
 import pe.edu.unmsm.ciudadsana.shared.web.response.ApiResponse;
@@ -32,15 +36,18 @@ import java.util.UUID;
 public class PermisoController {
 
     private final CrearPermisoUseCase crearUseCase;
+    private final ActualizarPermisoUseCase actualizarUseCase;
     private final ListarPermisosUseCase listarUseCase;
     private final ObtenerPermisoUseCase obtenerUseCase;
 
     public PermisoController(
             CrearPermisoUseCase crearUseCase,
+            ActualizarPermisoUseCase actualizarUseCase,
             ListarPermisosUseCase listarUseCase,
             ObtenerPermisoUseCase obtenerUseCase
     ) {
         this.crearUseCase = crearUseCase;
+        this.actualizarUseCase = actualizarUseCase;
         this.listarUseCase = listarUseCase;
         this.obtenerUseCase = obtenerUseCase;
     }
@@ -72,5 +79,16 @@ public class PermisoController {
     public ResponseEntity<ApiResponse<PermisoResponseDto>> obtener(@PathVariable UUID permisoId) {
         ObtenerPermisoQuery query = new ObtenerPermisoQuery(permisoId);
         return ResultResponseMapper.toOk(obtenerUseCase.obtener(query));
+    }
+
+    @Operation(summary = "Actualizar permiso")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{permisoId}")
+    public ResponseEntity<ApiResponse<PermisoResponseDto>> actualizar(
+            @PathVariable UUID permisoId,
+            @Valid @RequestBody ActualizarPermisoRequest request
+    ) {
+        ActualizarPermisoCommand command = new ActualizarPermisoCommand(permisoId, request.modulo(), request.descripcion());
+        return ResultResponseMapper.toOk(actualizarUseCase.actualizar(command));
     }
 }
