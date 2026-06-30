@@ -1,16 +1,21 @@
 package pe.edu.unmsm.ciudadsana.auth.infrastructure.persistence.entity;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import pe.edu.unmsm.ciudadsana.shared.persistence.entity.BaseJpaEntity;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @Entity
 @Table(name = "login_auditoria", schema = "auth")
+@AttributeOverrides({
+    @AttributeOverride(name = "id", column = @Column(name = "login_auditoria_id", updatable = false, nullable = false)),
+    @AttributeOverride(name = "creadoEn", column = @Column(name = "creado_en", updatable = false, nullable = false)),
+    @AttributeOverride(name = "actualizadoEn", column = @Column(name = "actualizado_en", insertable = false, updatable = false, nullable = true))
+})
 public class LoginAuditoriaJpaEntity extends BaseJpaEntity {
 
     @Column(name = "usuario_id")
@@ -31,14 +36,6 @@ public class LoginAuditoriaJpaEntity extends BaseJpaEntity {
     @Column(name = "motivo_fallo")
     private String motivoFallo;
 
-    @Column(name = "creado_en", updatable = false, nullable = false)
-    private Instant creadoEn;
-
-    @PrePersist
-    protected void onAuditoriaCreate() {
-        if (creadoEn == null) creadoEn = Instant.now();
-    }
-
     public UUID getUsuarioId() { return usuarioId; }
     public void setUsuarioId(UUID usuarioId) { this.usuarioId = usuarioId; }
     public String getUsernameIntento() { return usernameIntento; }
@@ -49,7 +46,6 @@ public class LoginAuditoriaJpaEntity extends BaseJpaEntity {
     public void setUserAgent(String userAgent) { this.userAgent = userAgent; }
     public boolean isExitoso() { return exitoso; }
     public void setExitoso(boolean exitoso) { this.exitoso = exitoso; }
-    public String getMotivFallo() { return motivoFallo; }
+    public String getMotivoFallo() { return motivoFallo; }
     public void setMotivoFallo(String motivoFallo) { this.motivoFallo = motivoFallo; }
-    public Instant getCreadoEn() { return creadoEn; }
 }
