@@ -1,6 +1,5 @@
 package pe.edu.unmsm.ciudadsana.auth.infrastructure.persistence.entity;
 
-import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -8,7 +7,6 @@ import pe.edu.unmsm.ciudadsana.shared.persistence.entity.BaseJpaEntity;
 
 @Entity
 @Table(name = "permiso", schema = "auth")
-@AttributeOverride(name = "actualizadoEn", column = @Column(name = "actualizado_en", insertable = false, updatable = false, nullable = true))
 public class PermisoJpaEntity extends BaseJpaEntity {
 
     @Column(name = "codigo", nullable = false, unique = true, length = 100)

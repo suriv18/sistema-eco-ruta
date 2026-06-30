@@ -37,10 +37,6 @@ import java.util.UUID;
 @Mapper(componentModel = "spring")
 public interface RutasEntityMapper {
 
-    // -------------------------------------------------------------------------
-    // RutaVersion
-    // -------------------------------------------------------------------------
-
     default RutaVersion toDomain(RutaVersionJpaEntity e, List<RutaParadaJpaEntity> paradaEntities) {
         List<RutaParada> paradas = paradaEntities.stream()
                 .map(this::toDomain)
@@ -60,6 +56,7 @@ public interface RutasEntityMapper {
     default RutaVersionJpaEntity toEntity(RutaVersion v) {
         RutaVersionJpaEntity e = new RutaVersionJpaEntity();
         e.setId(v.getId().value());
+        e.setTenantId(v.getRutaId().value());
         e.setRutaId(v.getRutaId().value());
         e.setVersion(v.getVersion());
         e.setMotivo(v.getMotivo().name());
@@ -68,13 +65,8 @@ public interface RutasEntityMapper {
         e.setDistanciaTotalM(v.getMetricas().distanciaM());
         e.setDuracionTotalS(v.getMetricas().duracionS());
         e.setCargaTotalKg(v.getMetricas().cargaKg());
-        e.setCreadoEn(v.getCreadoEn() != null ? v.getCreadoEn() : Instant.now());
         return e;
     }
-
-    // -------------------------------------------------------------------------
-    // RutaParada
-    // -------------------------------------------------------------------------
 
     default RutaParada toDomain(RutaParadaJpaEntity e) {
         return RutaParada.reconstitute(
@@ -110,10 +102,6 @@ public interface RutasEntityMapper {
         return e;
     }
 
-    // -------------------------------------------------------------------------
-    // RutaEvento
-    // -------------------------------------------------------------------------
-
     default RutaEvento toDomain(RutaEventoJpaEntity e) {
         return RutaEvento.reconstitute(
                 RutaEventoId.of(e.getId()),
@@ -127,17 +115,13 @@ public interface RutasEntityMapper {
     default RutaEventoJpaEntity toEntity(RutaEvento ev) {
         RutaEventoJpaEntity e = new RutaEventoJpaEntity();
         e.setId(ev.getId().value());
+        e.setTenantId(ev.getRutaId().value());
         e.setRutaId(ev.getRutaId().value());
         e.setTipoEvento(ev.getTipoEvento().name());
         e.setDescripcion(ev.getDescripcion().orElse(null));
         e.setDatosJson(ev.getDatosJson().orElse(null));
-        e.setCreadoEn(ev.getCreadoEn() != null ? ev.getCreadoEn() : Instant.now());
         return e;
     }
-
-    // -------------------------------------------------------------------------
-    // Ruta (main aggregate)
-    // -------------------------------------------------------------------------
 
     default Ruta toDomain(RutaJpaEntity e,
                           List<RutaVersionJpaEntity> versionEntities,

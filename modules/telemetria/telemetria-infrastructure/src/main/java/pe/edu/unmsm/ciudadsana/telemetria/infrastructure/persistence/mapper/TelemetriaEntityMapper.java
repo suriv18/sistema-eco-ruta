@@ -92,7 +92,6 @@ public interface TelemetriaEntityMapper {
         e.setPrecisionM(p.getPrecisionM().orElse(null));
         e.setOrigen(p.getOrigen().name());
         e.setRecibidoEn(p.getRecibidoEn());
-        e.setActualizadoEn(Instant.now());
         return e;
     }
 

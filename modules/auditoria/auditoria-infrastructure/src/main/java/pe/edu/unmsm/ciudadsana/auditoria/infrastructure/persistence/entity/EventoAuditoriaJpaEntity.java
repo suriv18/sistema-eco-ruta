@@ -2,13 +2,12 @@ package pe.edu.unmsm.ciudadsana.auditoria.infrastructure.persistence.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import pe.edu.unmsm.ciudadsana.shared.persistence.entity.BaseJpaEntity;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -16,11 +15,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class EventoAuditoriaJpaEntity {
-
-    @Id
-    @Column(name = "evento_id")
-    private UUID id;
+public class EventoAuditoriaJpaEntity extends BaseJpaEntity {
 
     @Column(name = "tenant_id", nullable = false)
     private UUID tenantId;
@@ -45,7 +40,4 @@ public class EventoAuditoriaJpaEntity {
 
     @Column(name = "datos_despues", columnDefinition = "jsonb")
     private String datosDespues;
-
-    @Column(name = "creado_en", nullable = false)
-    private Instant creadoEn;
 }

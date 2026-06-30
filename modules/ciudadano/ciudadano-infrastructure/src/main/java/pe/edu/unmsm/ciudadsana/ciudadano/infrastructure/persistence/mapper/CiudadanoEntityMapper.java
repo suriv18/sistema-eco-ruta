@@ -33,10 +33,6 @@ import java.util.UUID;
 @Mapper(componentModel = "spring")
 public interface CiudadanoEntityMapper {
 
-    // -------------------------------------------------------------------------
-    // Ciudadano
-    // -------------------------------------------------------------------------
-
     default Ciudadano toDomain(CiudadanoJpaEntity e) {
         return Ciudadano.reconstitute(
                 CiudadanoId.of(e.getId()),
@@ -65,10 +61,6 @@ public interface CiudadanoEntityMapper {
         return e;
     }
 
-    // -------------------------------------------------------------------------
-    // AlertaCiudadana
-    // -------------------------------------------------------------------------
-
     default AlertaCiudadanaJpaEntity toEntity(AlertaCiudadana a) {
         AlertaCiudadanaJpaEntity e = new AlertaCiudadanaJpaEntity();
         e.setId(a.getId().value());
@@ -84,8 +76,7 @@ public interface CiudadanoEntityMapper {
         e.setNivelCriticidad(a.getNivelCriticidad().name());
         e.setFuente(a.getFuente().name());
         e.setEstado(a.getEstado().name());
-        e.setRegistradaEn(a.getRegistradaEn());
-        e.setActualizadaEn(a.getActualizadaEn().orElse(null));
+        e.setActualizadoEn(a.getActualizadaEn().orElse(null));
         return e;
     }
 
@@ -107,7 +98,8 @@ public interface CiudadanoEntityMapper {
                 e.getZonaIdExterno() != null ? ZonaExternoId.of(e.getZonaIdExterno()) : null,
                 e.getTitulo(),
                 e.getDescripcion(),
-                Coordenadas.of(e.getLatitud(), e.getLongitud()),
+                Coordenadas.of(e.getLatitud() != null ? e.getLatitud() : 0.0,
+                               e.getLongitud() != null ? e.getLongitud() : 0.0),
                 VolumenEstimado.valueOf(e.getVolumenEstimado()),
                 NivelCriticidad.valueOf(e.getNivelCriticidad()),
                 FuenteAlerta.valueOf(e.getFuente()),
@@ -115,14 +107,10 @@ public interface CiudadanoEntityMapper {
                 fotos,
                 historial,
                 validacion,
-                e.getRegistradaEn(),
-                e.getActualizadaEn()
+                e.getCreadoEn(),
+                e.getActualizadoEn()
         );
     }
-
-    // -------------------------------------------------------------------------
-    // AlertaFoto value object
-    // -------------------------------------------------------------------------
 
     default AlertaFoto toDomain(AlertaFotoJpaEntity e) {
         return new AlertaFoto(
@@ -141,17 +129,12 @@ public interface CiudadanoEntityMapper {
         e.setUrlArchivo(f.urlArchivo());
         e.setTipoMime(f.tipoMime());
         e.setTamanioBytes(f.tamanioBytes());
-        e.setActualizadoEn(Instant.now());
         return e;
     }
 
-    // -------------------------------------------------------------------------
-    // AlertaHistorial value object
-    // -------------------------------------------------------------------------
-
     default AlertaHistorial toDomain(AlertaHistorialJpaEntity e) {
         return new AlertaHistorial(
-                e.getHistorialId(),
+                e.getId(),
                 AlertaId.of(e.getAlertaId()),
                 e.getEstadoAnterior(),
                 e.getEstadoNuevo(),
@@ -163,7 +146,7 @@ public interface CiudadanoEntityMapper {
 
     default AlertaHistorialJpaEntity toEntity(AlertaHistorial h) {
         AlertaHistorialJpaEntity e = new AlertaHistorialJpaEntity();
-        e.setHistorialId(h.historialId());
+        e.setId(h.historialId());
         e.setAlertaId(h.alertaId().value());
         e.setEstadoAnterior(h.estadoAnterior());
         e.setEstadoNuevo(h.estadoNuevo());
@@ -173,13 +156,9 @@ public interface CiudadanoEntityMapper {
         return e;
     }
 
-    // -------------------------------------------------------------------------
-    // ValidacionAlerta value object
-    // -------------------------------------------------------------------------
-
     default ValidacionAlerta toDomain(ValidacionAlertaJpaEntity e) {
         return new ValidacionAlerta(
-                ValidacionId.of(e.getValidacionId()),
+                ValidacionId.of(e.getId()),
                 AlertaId.of(e.getAlertaId()),
                 e.isEsDuplicada(),
                 e.getAlertaOriginalId() != null ? AlertaId.of(e.getAlertaOriginalId()) : null,
@@ -192,7 +171,7 @@ public interface CiudadanoEntityMapper {
 
     default ValidacionAlertaJpaEntity toEntity(ValidacionAlerta v) {
         ValidacionAlertaJpaEntity e = new ValidacionAlertaJpaEntity();
-        e.setValidacionId(v.id().value());
+        e.setId(v.id().value());
         e.setAlertaId(v.alertaId().value());
         e.setEsDuplicada(v.esDuplicada());
         e.setAlertaOriginalId(v.alertaOriginalId() != null ? v.alertaOriginalId().value() : null);

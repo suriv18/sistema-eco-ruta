@@ -2,11 +2,11 @@ package pe.edu.unmsm.ciudadsana.auditoria.infrastructure.persistence.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import pe.edu.unmsm.ciudadsana.shared.persistence.entity.BaseJpaEntity;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -16,11 +16,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class OutboxEventJpaEntity {
-
-    @Id
-    @Column(name = "outbox_id")
-    private UUID id;
+public class OutboxEventJpaEntity extends BaseJpaEntity {
 
     @Column(name = "tenant_id", nullable = false)
     private UUID tenantId;
@@ -39,9 +35,6 @@ public class OutboxEventJpaEntity {
 
     @Column(name = "estado", nullable = false, length = 30)
     private String estado;
-
-    @Column(name = "creado_en", nullable = false)
-    private Instant creadoEn;
 
     @Column(name = "publicado_en")
     private Instant publicadoEn;

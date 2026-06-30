@@ -29,11 +29,11 @@ public class EstadoUnidadJpaEntity extends TenantAwareJpaEntity {
     @Column(name = "ruta_externo_id")
     private UUID rutaExternoId;
 
-    @Column(name = "latitud", nullable = false)
-    private double latitud;
+    @Column(name = "latitud")
+    private Double latitud;
 
-    @Column(name = "longitud", nullable = false)
-    private double longitud;
+    @Column(name = "longitud")
+    private Double longitud;
 
     @Column(name = "ultima_velocidad_kmh")
     private Double ultimaVelocidadKmh;

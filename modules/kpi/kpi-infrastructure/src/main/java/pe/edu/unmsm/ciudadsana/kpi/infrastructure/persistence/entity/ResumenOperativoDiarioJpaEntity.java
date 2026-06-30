@@ -2,14 +2,13 @@ package pe.edu.unmsm.ciudadsana.kpi.infrastructure.persistence.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import pe.edu.unmsm.ciudadsana.shared.persistence.entity.TenantAwareJpaEntity;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -18,14 +17,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ResumenOperativoDiarioJpaEntity {
-
-    @Id
-    @Column(name = "resumen_id")
-    private UUID id;
-
-    @Column(name = "tenant_id", nullable = false)
-    private UUID tenantId;
+public class ResumenOperativoDiarioJpaEntity extends TenantAwareJpaEntity {
 
     @Column(name = "distrito_id_externo", nullable = false)
     private UUID distritoIdExterno;
@@ -53,7 +45,4 @@ public class ResumenOperativoDiarioJpaEntity {
 
     @Column(name = "tiempo_respuesta_promedio_min")
     private BigDecimal tiempoRespuestaPromedioMin;
-
-    @Column(name = "creado_en", nullable = false)
-    private Instant creadoEn;
 }

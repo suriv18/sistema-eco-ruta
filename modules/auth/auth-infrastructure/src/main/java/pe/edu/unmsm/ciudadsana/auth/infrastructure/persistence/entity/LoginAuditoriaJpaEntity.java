@@ -1,7 +1,5 @@
 package pe.edu.unmsm.ciudadsana.auth.infrastructure.persistence.entity;
 
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -11,11 +9,6 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "login_auditoria", schema = "auth")
-@AttributeOverrides({
-    @AttributeOverride(name = "id", column = @Column(name = "login_auditoria_id", updatable = false, nullable = false)),
-    @AttributeOverride(name = "creadoEn", column = @Column(name = "creado_en", updatable = false, nullable = false)),
-    @AttributeOverride(name = "actualizadoEn", column = @Column(name = "actualizado_en", insertable = false, updatable = false, nullable = true))
-})
 public class LoginAuditoriaJpaEntity extends BaseJpaEntity {
 
     @Column(name = "usuario_id")

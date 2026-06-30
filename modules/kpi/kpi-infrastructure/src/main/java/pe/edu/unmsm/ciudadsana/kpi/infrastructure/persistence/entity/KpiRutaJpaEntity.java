@@ -2,14 +2,13 @@ package pe.edu.unmsm.ciudadsana.kpi.infrastructure.persistence.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import pe.edu.unmsm.ciudadsana.shared.persistence.entity.TenantAwareJpaEntity;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -18,14 +17,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class KpiRutaJpaEntity {
-
-    @Id
-    @Column(name = "kpi_ruta_id")
-    private UUID id;
-
-    @Column(name = "tenant_id", nullable = false)
-    private UUID tenantId;
+public class KpiRutaJpaEntity extends TenantAwareJpaEntity {
 
     @Column(name = "ruta_id_externo", nullable = false)
     private UUID rutaIdExterno;
@@ -56,7 +48,4 @@ public class KpiRutaJpaEntity {
 
     @Column(name = "km_por_tonelada")
     private BigDecimal kmPorTonelada;
-
-    @Column(name = "creado_en", nullable = false)
-    private Instant creadoEn;
 }

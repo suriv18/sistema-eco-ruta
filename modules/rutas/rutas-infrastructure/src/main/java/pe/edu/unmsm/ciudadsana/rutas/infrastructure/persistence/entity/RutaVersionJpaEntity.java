@@ -2,13 +2,12 @@ package pe.edu.unmsm.ciudadsana.rutas.infrastructure.persistence.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import pe.edu.unmsm.ciudadsana.shared.persistence.entity.TenantAwareJpaEntity;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -16,11 +15,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RutaVersionJpaEntity {
-
-    @Id
-    @Column(name = "ruta_version_id")
-    private UUID id;
+public class RutaVersionJpaEntity extends TenantAwareJpaEntity {
 
     @Column(name = "ruta_id", nullable = false)
     private UUID rutaId;
@@ -45,9 +40,4 @@ public class RutaVersionJpaEntity {
 
     @Column(name = "carga_total_kg")
     private double cargaTotalKg;
-
-    @Column(name = "creado_en", nullable = false)
-    private Instant creadoEn;
-
-    // NOTE: geometria column exists in DB but is NOT mapped in JPA — skipped intentionally
 }

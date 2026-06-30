@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pe.edu.unmsm.ciudadsana.shared.persistence.entity.TenantAwareJpaEntity;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -50,10 +49,4 @@ public class AlertaCiudadanaJpaEntity extends TenantAwareJpaEntity {
 
     @Column(name = "estado", nullable = false)
     private String estado;
-
-    @Column(name = "registrada_en", nullable = false)
-    private Instant registradaEn;
-
-    @Column(name = "actualizada_en")
-    private Instant actualizadaEn;
 }

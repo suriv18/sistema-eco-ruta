@@ -30,11 +30,11 @@ public class PingGpsJpaEntity extends TenantAwareJpaEntity {
     @Column(name = "ts", nullable = false)
     private Instant ts;
 
-    @Column(name = "latitud", nullable = false)
-    private double latitud;
+    @Column(name = "latitud")
+    private Double latitud;
 
-    @Column(name = "longitud", nullable = false)
-    private double longitud;
+    @Column(name = "longitud")
+    private Double longitud;
 
     @Column(name = "velocidad_kmh")
     private Double velocidadKmh;

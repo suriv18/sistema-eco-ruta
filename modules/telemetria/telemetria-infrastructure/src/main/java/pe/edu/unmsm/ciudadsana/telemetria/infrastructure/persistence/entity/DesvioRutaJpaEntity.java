@@ -24,11 +24,11 @@ public class DesvioRutaJpaEntity extends TenantAwareJpaEntity {
     @Column(name = "ruta_externo_id", nullable = false)
     private UUID rutaExternoId;
 
-    @Column(name = "latitud", nullable = false)
-    private double latitud;
+    @Column(name = "latitud")
+    private Double latitud;
 
-    @Column(name = "longitud", nullable = false)
-    private double longitud;
+    @Column(name = "longitud")
+    private Double longitud;
 
     @Column(name = "distancia_desvio_m", nullable = false)
     private double distanciaDesvioM;

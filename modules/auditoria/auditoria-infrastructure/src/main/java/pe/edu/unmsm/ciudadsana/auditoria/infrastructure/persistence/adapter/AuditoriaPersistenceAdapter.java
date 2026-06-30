@@ -44,7 +44,6 @@ public class AuditoriaPersistenceAdapter implements AuditoriaPersistencePort {
         entity.setEntidadId(dto.entidadId());
         entity.setDatosAntes(dto.datosAntes());
         entity.setDatosDespues(dto.datosDespues());
-        entity.setCreadoEn(dto.creadoEn() != null ? dto.creadoEn() : Instant.now());
         eventoRepo.save(entity);
     }
 
@@ -84,7 +83,6 @@ public class AuditoriaPersistenceAdapter implements AuditoriaPersistencePort {
         entity.setEventType(dto.eventType());
         entity.setPayload(dto.payload());
         entity.setEstado(dto.estado());
-        entity.setCreadoEn(dto.creadoEn() != null ? dto.creadoEn() : Instant.now());
         entity.setPublicadoEn(dto.publicadoEn());
         entity.setErrorMensaje(dto.errorMensaje());
         outboxRepo.save(entity);

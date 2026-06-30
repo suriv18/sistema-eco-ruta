@@ -1,30 +1,50 @@
 -- V006: Seed data base
 
-INSERT INTO auth.rol (codigo, nombre, descripcion)
+INSERT INTO auth.tenant (id, nombre, estado)
+VALUES (
+    '00000000-0000-0000-0000-000000000000',
+    'Sistema Interno',
+    'ACTIVO'
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO auth.usuario (id, tenant_id, nombres, apellidos, email, username, password_hash, estado, creado_por)
+VALUES (
+    '00000000-0000-0000-0000-000000000001',
+    '00000000-0000-0000-0000-000000000000',
+    'Sistema',
+    'Sistema',
+    'sistema@ciudadsana.internal',
+    'sistema',
+    'NO_LOGIN',
+    'ACTIVO',
+    '00000000-0000-0000-0000-000000000001'
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO auth.rol (codigo, nombre, descripcion, creado_por)
 VALUES
-    ('ADMIN',      'Administrador',       'Gestiona usuarios, roles, catálogos y configuración del sistema.'),
-    ('SUPERVISOR', 'Supervisor de zona',  'Planifica, aprueba, monitorea y reprograma rutas.'),
-    ('OPERADOR',   'Operador de flota',   'Consulta y ejecuta la ruta asignada.'),
-    ('ANALISTA',   'Analista municipal',  'Consulta KPIs, históricos y mapas de calor.'),
-    ('CIUDADANO',  'Ciudadano',           'Registra alertas y consulta horarios de recolección.')
+    ('ADMIN',      'Administrador',       'Gestiona usuarios, roles, catálogos y configuración del sistema.', '00000000-0000-0000-0000-000000000001'),
+    ('SUPERVISOR', 'Supervisor de zona',  'Planifica, aprueba, monitorea y reprograma rutas.',               '00000000-0000-0000-0000-000000000001'),
+    ('OPERADOR',   'Operador de flota',   'Consulta y ejecuta la ruta asignada.',                            '00000000-0000-0000-0000-000000000001'),
+    ('ANALISTA',   'Analista municipal',  'Consulta KPIs, históricos y mapas de calor.',                     '00000000-0000-0000-0000-000000000001'),
+    ('CIUDADANO',  'Ciudadano',           'Registra alertas y consulta horarios de recolección.',            '00000000-0000-0000-0000-000000000001')
 ON CONFLICT (codigo) DO NOTHING;
 
-INSERT INTO auth.permiso (codigo, modulo, descripcion)
+INSERT INTO auth.permiso (codigo, modulo, descripcion, creado_por)
 VALUES
-    ('USUARIO_GESTIONAR',  'AUTH',       'Crear, actualizar y desactivar usuarios.'),
-    ('ROL_GESTIONAR',      'AUTH',       'Gestionar roles y permisos.'),
-    ('CATALOGO_GESTIONAR', 'OPERACION',  'Gestionar distritos, zonas, unidades, choferes, turnos y contenedores.'),
-    ('RUTA_OPTIMIZAR',     'OPERACION',  'Solicitar optimización de rutas.'),
-    ('RUTA_APROBAR',       'OPERACION',  'Aprobar rutas generadas.'),
-    ('RUTA_MONITOREAR',    'OPERACION',  'Monitorear rutas en ejecución.'),
-    ('TELEMETRIA_VER',     'TELEMETRIA', 'Ver ubicación GPS de unidades.'),
-    ('ALERTA_REGISTRAR',   'CIUDADANO',  'Registrar alerta ciudadana.'),
-    ('ALERTA_VALIDAR',     'CIUDADANO',  'Validar o descartar alertas ciudadanas.'),
-    ('KPI_VER',            'KPI',        'Consultar KPIs operativos.')
+    ('USUARIO_GESTIONAR',  'AUTH',       'Crear, actualizar y desactivar usuarios.',        '00000000-0000-0000-0000-000000000001'),
+    ('ROL_GESTIONAR',      'AUTH',       'Gestionar roles y permisos.',                     '00000000-0000-0000-0000-000000000001'),
+    ('CATALOGO_GESTIONAR', 'OPERACION',  'Gestionar distritos, zonas, unidades, choferes, turnos y contenedores.', '00000000-0000-0000-0000-000000000001'),
+    ('RUTA_OPTIMIZAR',     'OPERACION',  'Solicitar optimización de rutas.',                '00000000-0000-0000-0000-000000000001'),
+    ('RUTA_APROBAR',       'OPERACION',  'Aprobar rutas generadas.',                        '00000000-0000-0000-0000-000000000001'),
+    ('RUTA_MONITOREAR',    'OPERACION',  'Monitorear rutas en ejecución.',                  '00000000-0000-0000-0000-000000000001'),
+    ('TELEMETRIA_VER',     'TELEMETRIA', 'Ver ubicación GPS de unidades.',                  '00000000-0000-0000-0000-000000000001'),
+    ('ALERTA_REGISTRAR',   'CIUDADANO',  'Registrar alerta ciudadana.',                     '00000000-0000-0000-0000-000000000001'),
+    ('ALERTA_VALIDAR',     'CIUDADANO',  'Validar o descartar alertas ciudadanas.',         '00000000-0000-0000-0000-000000000001'),
+    ('KPI_VER',            'KPI',        'Consultar KPIs operativos.',                      '00000000-0000-0000-0000-000000000001')
 ON CONFLICT (codigo) DO NOTHING;
 
 INSERT INTO auth.rol_permiso (rol_id, permiso_id)
-SELECT r.rol_id, p.permiso_id
+SELECT r.id, p.id
 FROM auth.rol r
 JOIN auth.permiso p ON p.codigo IN (
     'USUARIO_GESTIONAR','ROL_GESTIONAR','CATALOGO_GESTIONAR','RUTA_OPTIMIZAR',
@@ -34,28 +54,28 @@ WHERE r.codigo = 'ADMIN'
 ON CONFLICT DO NOTHING;
 
 INSERT INTO auth.rol_permiso (rol_id, permiso_id)
-SELECT r.rol_id, p.permiso_id
+SELECT r.id, p.id
 FROM auth.rol r
 JOIN auth.permiso p ON p.codigo IN ('CATALOGO_GESTIONAR','RUTA_OPTIMIZAR','RUTA_APROBAR','RUTA_MONITOREAR','TELEMETRIA_VER','ALERTA_VALIDAR','KPI_VER')
 WHERE r.codigo = 'SUPERVISOR'
 ON CONFLICT DO NOTHING;
 
 INSERT INTO auth.rol_permiso (rol_id, permiso_id)
-SELECT r.rol_id, p.permiso_id
+SELECT r.id, p.id
 FROM auth.rol r
 JOIN auth.permiso p ON p.codigo IN ('RUTA_MONITOREAR','TELEMETRIA_VER')
 WHERE r.codigo = 'OPERADOR'
 ON CONFLICT DO NOTHING;
 
 INSERT INTO auth.rol_permiso (rol_id, permiso_id)
-SELECT r.rol_id, p.permiso_id
+SELECT r.id, p.id
 FROM auth.rol r
 JOIN auth.permiso p ON p.codigo IN ('KPI_VER','TELEMETRIA_VER','RUTA_MONITOREAR')
 WHERE r.codigo = 'ANALISTA'
 ON CONFLICT DO NOTHING;
 
 INSERT INTO auth.rol_permiso (rol_id, permiso_id)
-SELECT r.rol_id, p.permiso_id
+SELECT r.id, p.id
 FROM auth.rol r
 JOIN auth.permiso p ON p.codigo IN ('ALERTA_REGISTRAR')
 WHERE r.codigo = 'CIUDADANO'

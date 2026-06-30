@@ -2,11 +2,11 @@ package pe.edu.unmsm.ciudadsana.ciudadano.infrastructure.persistence.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import pe.edu.unmsm.ciudadsana.shared.persistence.entity.TenantAwareJpaEntity;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -16,11 +16,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class AlertaHistorialJpaEntity {
-
-    @Id
-    @Column(name = "historial_id")
-    private UUID historialId;
+public class AlertaHistorialJpaEntity extends TenantAwareJpaEntity {
 
     @Column(name = "alerta_id", nullable = false)
     private UUID alertaId;

@@ -2,11 +2,11 @@ package pe.edu.unmsm.ciudadsana.kpi.infrastructure.persistence.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import pe.edu.unmsm.ciudadsana.shared.persistence.entity.TenantAwareJpaEntity;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -17,14 +17,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class KpiAlertaJpaEntity {
-
-    @Id
-    @Column(name = "kpi_alerta_id")
-    private UUID id;
-
-    @Column(name = "tenant_id", nullable = false)
-    private UUID tenantId;
+public class KpiAlertaJpaEntity extends TenantAwareJpaEntity {
 
     @Column(name = "alerta_id_externo", nullable = false)
     private UUID alertaIdExterno;
@@ -46,7 +39,4 @@ public class KpiAlertaJpaEntity {
 
     @Column(name = "incluida_en_ruta", nullable = false)
     private boolean incluidaEnRuta;
-
-    @Column(name = "creado_en", nullable = false)
-    private Instant creadoEn;
 }

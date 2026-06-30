@@ -19,8 +19,14 @@ public abstract class BaseJpaEntity {
     @Column(name = "creado_en", updatable = false, nullable = false)
     private Instant creadoEn;
 
-    @Column(name = "actualizado_en", nullable = false)
+    @Column(name = "creado_por", updatable = false, nullable = false)
+    private UUID creadoPor;
+
+    @Column(name = "actualizado_en")
     private Instant actualizadoEn;
+
+    @Column(name = "actualizado_por")
+    private UUID actualizadoPor;
 
     @PrePersist
     protected void onCreate() {
@@ -37,6 +43,10 @@ public abstract class BaseJpaEntity {
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
     public Instant getCreadoEn() { return creadoEn; }
+    public UUID getCreadoPor() { return creadoPor; }
+    public void setCreadoPor(UUID creadoPor) { this.creadoPor = creadoPor; }
     public Instant getActualizadoEn() { return actualizadoEn; }
     public void setActualizadoEn(Instant actualizadoEn) { this.actualizadoEn = actualizadoEn; }
+    public UUID getActualizadoPor() { return actualizadoPor; }
+    public void setActualizadoPor(UUID actualizadoPor) { this.actualizadoPor = actualizadoPor; }
 }

@@ -21,7 +21,6 @@ import pe.edu.unmsm.ciudadsana.kpi.infrastructure.persistence.repository.KpiZona
 import pe.edu.unmsm.ciudadsana.kpi.infrastructure.persistence.repository.ResumenOperativoDiarioJpaRepository;
 import pe.edu.unmsm.ciudadsana.shared.result.PageResult;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -71,9 +70,6 @@ public class KpiPersistenceAdapter implements KpiPersistencePort {
         entity.setAlertasRegistradas(dto.alertasRegistradas());
         entity.setAlertasAtendidas(dto.alertasAtendidas());
         entity.setTiempoRespuestaPromedioMin(dto.tiempoRespuestaPromedioMin());
-        if (entity.getCreadoEn() == null) {
-            entity.setCreadoEn(dto.creadoEn() != null ? dto.creadoEn() : Instant.now());
-        }
 
         return toResumenDto(resumenRepo.save(entity));
     }
