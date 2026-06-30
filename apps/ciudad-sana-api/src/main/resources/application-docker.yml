@@ -2,3 +2,5 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+  flyway:
+    validate-on-migrate: false

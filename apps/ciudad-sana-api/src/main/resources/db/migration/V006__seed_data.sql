@@ -7,6 +7,13 @@ VALUES (
     'ACTIVO'
 ) ON CONFLICT (id) DO NOTHING;
 
+INSERT INTO auth.tenant (id, nombre, estado)
+VALUES (
+    '11111111-1111-1111-1111-111111111111',
+    'Municipalidad Lima',
+    'ACTIVO'
+) ON CONFLICT (id) DO NOTHING;
+
 INSERT INTO auth.usuario (id, tenant_id, nombres, apellidos, email, username, password_hash, estado, creado_por)
 VALUES (
     '00000000-0000-0000-0000-000000000001',
@@ -16,6 +23,19 @@ VALUES (
     'sistema@ciudadsana.internal',
     'sistema',
     'NO_LOGIN',
+    'ACTIVO',
+    '00000000-0000-0000-0000-000000000001'
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO auth.usuario (id, tenant_id, nombres, apellidos, email, username, password_hash, estado, creado_por)
+VALUES (
+    '22222222-2222-2222-2222-222222222222',
+    '11111111-1111-1111-1111-111111111111',
+    'Admin',
+    'Municipal',
+    'admin@ciudadsana.pe',
+    'admin',
+    '$2b$10$IA5nLHkIpZRsKZMDq12GuuWrfP//0qy3.jz630dldXOnk0Lr28wmS',
     'ACTIVO',
     '00000000-0000-0000-0000-000000000001'
 ) ON CONFLICT (id) DO NOTHING;
@@ -79,4 +99,8 @@ SELECT r.id, p.id
 FROM auth.rol r
 JOIN auth.permiso p ON p.codigo IN ('ALERTA_REGISTRAR')
 WHERE r.codigo = 'CIUDADANO'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO auth.usuario_rol (usuario_id, rol_id)
+SELECT '22222222-2222-2222-2222-222222222222', id FROM auth.rol WHERE codigo = 'ADMIN'
 ON CONFLICT DO NOTHING;

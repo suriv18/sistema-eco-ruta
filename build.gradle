@@ -32,7 +32,7 @@ subprojects {
     }
 
     tasks.withType(JavaCompile).configureEach {
-        options.compilerArgs += ['--enable-preview']
+        options.compilerArgs += ['--enable-preview', '-parameters']
         options.encoding = 'UTF-8'
     }
 

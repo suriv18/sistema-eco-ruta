@@ -28,11 +28,14 @@ public abstract class BaseJpaEntity {
     @Column(name = "actualizado_por")
     private UUID actualizadoPor;
 
+    private static final UUID SISTEMA_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
+
     @PrePersist
     protected void onCreate() {
         if (id == null) id = UUID.randomUUID();
         creadoEn = Instant.now();
-        actualizadoEn = Instant.now();
+        if (creadoPor == null) creadoPor = SISTEMA_ID;
+        actualizadoEn = null;
     }
 
     @PreUpdate

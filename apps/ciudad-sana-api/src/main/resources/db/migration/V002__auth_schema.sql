@@ -94,14 +94,17 @@ CREATE TABLE IF NOT EXISTS auth.refresh_token (
 
 CREATE TABLE IF NOT EXISTS auth.login_auditoria (
     id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id        UUID,
     usuario_id       UUID,
     username_intento VARCHAR(150),
-    ip_origen        INET,
+    ip_origen        VARCHAR(45),
     user_agent       TEXT,
     exitoso          BOOLEAN NOT NULL,
     motivo_fallo     TEXT,
     creado_en        TIMESTAMPTZ NOT NULL DEFAULT now(),
     creado_por       UUID NOT NULL DEFAULT '00000000-0000-0000-0000-000000000001',
+    actualizado_en   TIMESTAMPTZ,
+    actualizado_por  UUID,
     CONSTRAINT fk_auth_login_usuario FOREIGN KEY (usuario_id) REFERENCES auth.usuario(id)
 );
 

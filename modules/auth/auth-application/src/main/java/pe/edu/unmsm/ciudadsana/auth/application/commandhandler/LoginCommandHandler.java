@@ -9,11 +9,13 @@ import pe.edu.unmsm.ciudadsana.auth.application.port.out.JwtTokenPort;
 import pe.edu.unmsm.ciudadsana.auth.application.port.out.LoginAuditoriaPersistencePort;
 import pe.edu.unmsm.ciudadsana.auth.application.port.out.PasswordEncoderPort;
 import pe.edu.unmsm.ciudadsana.auth.application.port.out.RefreshTokenPersistencePort;
+import pe.edu.unmsm.ciudadsana.auth.application.port.out.RolPersistencePort;
 import pe.edu.unmsm.ciudadsana.auth.application.port.out.UsuarioPersistencePort;
 import pe.edu.unmsm.ciudadsana.auth.domain.enums.EstadoUsuario;
 import pe.edu.unmsm.ciudadsana.auth.domain.model.RefreshToken;
 import pe.edu.unmsm.ciudadsana.auth.domain.model.Usuario;
 import pe.edu.unmsm.ciudadsana.auth.domain.valueobject.RefreshTokenId;
+import pe.edu.unmsm.ciudadsana.auth.domain.valueobject.RolId;
 import pe.edu.unmsm.ciudadsana.auth.domain.valueobject.UsuarioId;
 import pe.edu.unmsm.ciudadsana.auth.domain.valueobject.Username;
 import pe.edu.unmsm.ciudadsana.shared.kernel.domain.valueobject.TenantId;
@@ -22,6 +24,7 @@ import pe.edu.unmsm.ciudadsana.shared.result.Result;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -31,6 +34,7 @@ import java.util.stream.Collectors;
 public class LoginCommandHandler implements LoginUseCase {
 
     private final UsuarioPersistencePort usuarioPort;
+    private final RolPersistencePort rolPort;
     private final PasswordEncoderPort passwordEncoder;
     private final JwtTokenPort jwtTokenPort;
     private final RefreshTokenPersistencePort refreshTokenPort;
@@ -39,12 +43,14 @@ public class LoginCommandHandler implements LoginUseCase {
 
     public LoginCommandHandler(
             UsuarioPersistencePort usuarioPort,
+            RolPersistencePort rolPort,
             PasswordEncoderPort passwordEncoder,
             JwtTokenPort jwtTokenPort,
             RefreshTokenPersistencePort refreshTokenPort,
             LoginAuditoriaPersistencePort auditoriaPort,
             EventPublisherPort eventPublisher) {
         this.usuarioPort = usuarioPort;
+        this.rolPort = rolPort;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenPort = jwtTokenPort;
         this.refreshTokenPort = refreshTokenPort;
@@ -83,8 +89,9 @@ public class LoginCommandHandler implements LoginUseCase {
         usuario.registrarLoginExitoso(Instant.now(), command.ipOrigen());
         usuarioPort.save(usuario);
 
-        Set<String> roles = usuario.getRoles().stream()
-                .map(rolId -> rolId.value().toString())
+        List<RolId> rolIds = List.copyOf(usuario.getRoles());
+        Set<String> roles = rolPort.findByIds(rolIds).stream()
+                .map(rol -> rol.getCodigo())
                 .collect(Collectors.toSet());
 
         String accessToken = jwtTokenPort.generateAccessToken(
