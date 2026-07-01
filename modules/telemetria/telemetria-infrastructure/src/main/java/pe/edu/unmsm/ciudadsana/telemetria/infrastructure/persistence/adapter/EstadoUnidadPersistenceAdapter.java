@@ -1,7 +1,9 @@
 package pe.edu.unmsm.ciudadsana.telemetria.infrastructure.persistence.adapter;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import pe.edu.unmsm.ciudadsana.shared.kernel.domain.valueobject.TenantId;
+import pe.edu.unmsm.ciudadsana.shared.result.PageResult;
 import pe.edu.unmsm.ciudadsana.telemetria.application.port.out.EstadoUnidadPersistencePort;
 import pe.edu.unmsm.ciudadsana.telemetria.domain.valueobject.UnidadExternoId;
 import pe.edu.unmsm.ciudadsana.telemetria.infrastructure.persistence.mapper.TelemetriaEntityMapper;
@@ -29,5 +31,11 @@ public class EstadoUnidadPersistenceAdapter implements EstadoUnidadPersistencePo
     @Override
     public void upsert(EstadoUnidadView estadoUnidad) {
         repo.save(mapper.toEntity(estadoUnidad));
+    }
+
+    @Override
+    public PageResult<EstadoUnidadView> findAllByTenant(TenantId tenantId, int page, int size) {
+        var p = repo.findByTenantId(tenantId.value(), PageRequest.of(page, size));
+        return PageResult.of(p.getContent().stream().map(mapper::toView).toList(), page, size, p.getTotalElements());
     }
 }

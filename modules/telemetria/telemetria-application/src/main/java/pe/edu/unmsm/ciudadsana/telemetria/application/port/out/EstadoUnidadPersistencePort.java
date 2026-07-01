@@ -1,5 +1,6 @@
 package pe.edu.unmsm.ciudadsana.telemetria.application.port.out;
 
+import pe.edu.unmsm.ciudadsana.shared.result.PageResult;
 import pe.edu.unmsm.ciudadsana.telemetria.domain.valueobject.UnidadExternoId;
 import pe.edu.unmsm.ciudadsana.shared.kernel.domain.valueobject.TenantId;
 
@@ -11,6 +12,8 @@ public interface EstadoUnidadPersistencePort {
     Optional<EstadoUnidadView> findByUnidad(UnidadExternoId unidadExternoId, TenantId tenantId);
 
     void upsert(EstadoUnidadView estadoUnidad);
+
+    PageResult<EstadoUnidadView> findAllByTenant(TenantId tenantId, int page, int size);
 
     record EstadoUnidadView(
             java.util.UUID id,

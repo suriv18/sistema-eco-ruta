@@ -10,6 +10,9 @@ import pe.edu.unmsm.ciudadsana.telemetria.domain.valueobject.UnidadExternoId;
 import pe.edu.unmsm.ciudadsana.telemetria.infrastructure.persistence.mapper.TelemetriaEntityMapper;
 import pe.edu.unmsm.ciudadsana.telemetria.infrastructure.persistence.repository.PingGpsJpaRepository;
 
+import java.time.Instant;
+import java.util.UUID;
+
 @Component
 public class PingGpsPersistenceAdapter implements PingGpsPersistencePort {
 
@@ -30,6 +33,13 @@ public class PingGpsPersistenceAdapter implements PingGpsPersistencePort {
     public PageResult<PingGps> findAllByUnidad(UnidadExternoId unidadExternoId, TenantId tenantId, int page, int size) {
         var p = repo.findAllByUnidadExternoIdAndTenantIdOrderByTsDesc(
                 unidadExternoId.value(), tenantId.value(), PageRequest.of(page, size));
+        return PageResult.of(p.getContent().stream().map(mapper::toDomain).toList(), page, size, p.getTotalElements());
+    }
+
+    @Override
+    public PageResult<PingGps> findHistorico(TenantId tenantId, UnidadExternoId unidadId, Instant desde, Instant hasta, int page, int size) {
+        UUID unidadUuid = unidadId != null ? unidadId.value() : null;
+        var p = repo.findHistorico(tenantId.value(), unidadUuid, desde, hasta, PageRequest.of(page, size));
         return PageResult.of(p.getContent().stream().map(mapper::toDomain).toList(), page, size, p.getTotalElements());
     }
 }
