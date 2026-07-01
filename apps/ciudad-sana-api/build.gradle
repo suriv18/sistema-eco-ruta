@@ -18,6 +18,11 @@ dependencies {
     implementation project(':shared:shared-security')
     implementation project(':shared:shared-persistence')
 
+    // Modules - domain events (for WebSocket @EventListener)
+    implementation project(':modules:telemetria:telemetria-domain')
+    implementation project(':modules:ciudadano:ciudadano-domain')
+    implementation project(':modules:rutas:rutas-domain')
+
     // Modules - infrastructure (wires adapters)
     implementation project(':modules:auth:auth-infrastructure')
     implementation project(':modules:auth:auth-interfaces')
