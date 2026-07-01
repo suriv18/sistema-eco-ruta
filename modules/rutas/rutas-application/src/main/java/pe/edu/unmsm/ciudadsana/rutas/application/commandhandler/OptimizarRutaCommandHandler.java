@@ -6,23 +6,15 @@ import pe.edu.unmsm.ciudadsana.integracion.application.dto.SolicitudOptimizacion
 import pe.edu.unmsm.ciudadsana.integracion.application.port.out.OptimizationClientPort;
 import pe.edu.unmsm.ciudadsana.rutas.application.command.AgregarVersionRutaCommand;
 import pe.edu.unmsm.ciudadsana.rutas.application.command.OptimizarRutaCommand;
-import pe.edu.unmsm.ciudadsana.rutas.application.dto.MetricasRutaDto;
-import pe.edu.unmsm.ciudadsana.rutas.application.dto.RutaParadaDto;
 import pe.edu.unmsm.ciudadsana.rutas.application.dto.RutaResponseDto;
-import pe.edu.unmsm.ciudadsana.rutas.application.dto.RutaVersionDto;
 import pe.edu.unmsm.ciudadsana.rutas.application.port.in.AgregarVersionRutaUseCase;
 import pe.edu.unmsm.ciudadsana.rutas.application.port.in.OptimizarRutaUseCase;
 import pe.edu.unmsm.ciudadsana.rutas.application.port.out.RutasEventPublisherPort;
 import pe.edu.unmsm.ciudadsana.rutas.application.port.out.RutasPersistencePort;
 import pe.edu.unmsm.ciudadsana.rutas.domain.enums.TipoRuta;
 import pe.edu.unmsm.ciudadsana.rutas.domain.model.Ruta;
-import pe.edu.unmsm.ciudadsana.rutas.domain.model.RutaParada;
-import pe.edu.unmsm.ciudadsana.rutas.domain.model.RutaVersion;
-import pe.edu.unmsm.ciudadsana.rutas.domain.valueobject.AlertaExternoId;
-import pe.edu.unmsm.ciudadsana.rutas.domain.valueobject.ContenedorExternoId;
 import pe.edu.unmsm.ciudadsana.rutas.domain.valueobject.DepositoExternoId;
 import pe.edu.unmsm.ciudadsana.rutas.domain.valueobject.DistritoExternoId;
-import pe.edu.unmsm.ciudadsana.rutas.domain.valueobject.MetricasRuta;
 import pe.edu.unmsm.ciudadsana.rutas.domain.valueobject.RutaId;
 import pe.edu.unmsm.ciudadsana.rutas.domain.valueobject.TurnoExternoId;
 import pe.edu.unmsm.ciudadsana.shared.kernel.domain.valueobject.TenantId;
@@ -133,43 +125,5 @@ public class OptimizarRutaCommandHandler implements OptimizarRutaUseCase {
         } catch (Exception e) {
             return null;
         }
-    }
-
-    private MetricasRutaDto toMetricasDto(MetricasRuta m) {
-        return new MetricasRutaDto(m.distanciaM(), m.duracionS(), m.cargaKg());
-    }
-
-    private RutaParadaDto toParadaDto(RutaParada p) {
-        return new RutaParadaDto(
-                p.getId().value(), p.getRutaVersionId().value(), p.getZonaId().value(),
-                p.getContenedorId().map(ContenedorExternoId::value).orElse(null),
-                p.getOrden(), p.getEta().orElse(null),
-                p.getHoraLlegadaReal().orElse(null), p.getHoraSalidaReal().orElse(null),
-                p.getDemandaEstimadaKg(), p.getCargaAcumuladaKg(),
-                p.getEstado().name(), p.getCreadoEn()
-        );
-    }
-
-    private RutaVersionDto toVersionDto(RutaVersion v) {
-        return new RutaVersionDto(
-                v.getId().value(), v.getRutaId().value(), v.getVersion(),
-                v.getMotivo().name(),
-                v.getAlertaIdExterno().map(AlertaExternoId::value).orElse(null),
-                v.getGeneradoPor().name(), toMetricasDto(v.getMetricas()),
-                v.getParadas().stream().map(this::toParadaDto).toList(),
-                v.getCreadoEn()
-        );
-    }
-
-    private RutaResponseDto toDto(Ruta r) {
-        return new RutaResponseDto(
-                r.getId().value(), r.getTenantId().value(),
-                r.getTurnoId().value(), r.getDistritoId().value(),
-                r.getDepositoOrigenId().value(), r.getDepositoDestinoId().value(),
-                r.getFecha(), r.getTipoRuta().name(), r.getEstado().name(),
-                toMetricasDto(r.getMetricas()),
-                r.getVersionActual().map(this::toVersionDto).orElse(null),
-                r.getCreadoEn(), r.getActualizadoEn().orElse(null)
-        );
     }
 }
