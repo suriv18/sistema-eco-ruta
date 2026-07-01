@@ -39,6 +39,8 @@ public class RutaController {
     private final AgregarVersionRutaUseCase agregarVersionUseCase;
     private final ActualizarParadaUseCase actualizarParadaUseCase;
     private final RegistrarEventoRutaUseCase registrarEventoUseCase;
+    private final OptimizarRutaUseCase optimizarUseCase;
+    private final ReoptimizarRutaUseCase reoptimizarUseCase;
     private final CurrentUserProvider currentUser;
 
     public RutaController(CrearRutaUseCase crearUseCase,
@@ -52,6 +54,8 @@ public class RutaController {
                           AgregarVersionRutaUseCase agregarVersionUseCase,
                           ActualizarParadaUseCase actualizarParadaUseCase,
                           RegistrarEventoRutaUseCase registrarEventoUseCase,
+                          OptimizarRutaUseCase optimizarUseCase,
+                          ReoptimizarRutaUseCase reoptimizarUseCase,
                           CurrentUserProvider currentUser) {
         this.crearUseCase = crearUseCase;
         this.obtenerUseCase = obtenerUseCase;
@@ -64,7 +68,40 @@ public class RutaController {
         this.agregarVersionUseCase = agregarVersionUseCase;
         this.actualizarParadaUseCase = actualizarParadaUseCase;
         this.registrarEventoUseCase = registrarEventoUseCase;
+        this.optimizarUseCase = optimizarUseCase;
+        this.reoptimizarUseCase = reoptimizarUseCase;
         this.currentUser = currentUser;
+    }
+
+    @Operation(summary = "Optimizar ruta automáticamente (llama al optimizador externo)")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPERVISOR')")
+    @PostMapping("/optimizar")
+    public ResponseEntity<ApiResponse<RutaResponseDto>> optimizar(
+            @Valid @RequestBody OptimizarRutaRequest req) {
+        var user = currentUser.requireCurrentUser();
+        var cmd = new OptimizarRutaCommand(
+                user.tenantId(), req.turnoId(), req.distritoId(),
+                req.depositoOrigenId(), req.depositoDestinoId(),
+                req.fecha(), req.tipoRuta(),
+                req.unidades(), req.zonas(),
+                req.alertasCriticas(), req.parametrosSolver()
+        );
+        return ResultResponseMapper.toCreated(optimizarUseCase.optimizar(cmd));
+    }
+
+    @Operation(summary = "Reoptimizar ruta (nueva versión automática)")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPERVISOR')")
+    @PostMapping("/{id}/reoptimizar")
+    public ResponseEntity<ApiResponse<RutaResponseDto>> reoptimizar(
+            @PathVariable UUID id,
+            @Valid @RequestBody ReoptimizarRutaRequest req) {
+        var user = currentUser.requireCurrentUser();
+        var cmd = new ReoptimizarRutaCommand(
+                user.tenantId(), id,
+                req.unidades(), req.zonas(),
+                req.alertasCriticas(), req.parametrosSolver(), req.motivo()
+        );
+        return ResultResponseMapper.toCreated(reoptimizarUseCase.reoptimizar(cmd));
     }
 
     @Operation(summary = "Crear ruta de recolección")
