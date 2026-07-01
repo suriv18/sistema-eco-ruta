@@ -24,7 +24,11 @@ public class DesactivarDistritoCommandHandler implements DesactivarDistritoUseCa
     public Result<Void> desactivar(DesactivarDistritoCommand cmd) {
         return distritosPersistencePort.findById(DistritoId.of(cmd.id()), TenantId.of(cmd.tenantId()))
                 .map(distrito -> {
-                    distrito.desactivar();
+                    try {
+                        distrito.desactivar();
+                    } catch (IllegalStateException e) {
+                        return Result.<Void>failure(ErrorCode.VALIDACION_ERROR, e.getMessage());
+                    }
                     distritosPersistencePort.save(distrito);
                     return Result.<Void>success(null);
                 })

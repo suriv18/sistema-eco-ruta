@@ -24,7 +24,11 @@ public class DesactivarDepositoCommandHandler implements DesactivarDepositoUseCa
     public Result<Void> desactivar(DesactivarDepositoCommand cmd) {
         return depositosPersistencePort.findByIdAndTenantId(DepositoId.of(cmd.id()), TenantId.of(cmd.tenantId()))
                 .map(deposito -> {
-                    deposito.desactivar();
+                    try {
+                        deposito.desactivar();
+                    } catch (IllegalStateException e) {
+                        return Result.<Void>failure(ErrorCode.VALIDACION_ERROR, e.getMessage());
+                    }
                     depositosPersistencePort.save(deposito);
                     return Result.<Void>success(null);
                 })

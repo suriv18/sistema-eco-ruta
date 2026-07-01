@@ -1,5 +1,7 @@
 package pe.edu.unmsm.ciudadsana.operacion.interfaces.rest;
 
+import java.util.UUID;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -17,8 +19,6 @@ import pe.edu.unmsm.ciudadsana.operacion.application.query.ListarChoferesQuery;
 import pe.edu.unmsm.ciudadsana.operacion.application.query.ObtenerChoferQuery;
 import pe.edu.unmsm.ciudadsana.operacion.interfaces.rest.request.CambiarEstadoChoferRequest;
 import pe.edu.unmsm.ciudadsana.operacion.interfaces.rest.request.RegistrarChoferRequest;
-
-import java.util.UUID;
 import pe.edu.unmsm.ciudadsana.shared.result.PageResult;
 import pe.edu.unmsm.ciudadsana.shared.security.context.CurrentUserProvider;
 import pe.edu.unmsm.ciudadsana.shared.web.response.ApiResponse;

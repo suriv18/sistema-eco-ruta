@@ -24,7 +24,11 @@ public class ActivarDistritoCommandHandler implements ActivarDistritoUseCase {
     public Result<Void> activar(ActivarDistritoCommand cmd) {
         return distritosPersistencePort.findById(DistritoId.of(cmd.id()), TenantId.of(cmd.tenantId()))
                 .map(distrito -> {
-                    distrito.activar();
+                    try {
+                        distrito.activar();
+                    } catch (IllegalStateException e) {
+                        return Result.<Void>failure(ErrorCode.VALIDACION_ERROR, e.getMessage());
+                    }
                     distritosPersistencePort.save(distrito);
                     return Result.<Void>success(null);
                 })
