@@ -5,8 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import pe.edu.unmsm.ciudadsana.auditoria.infrastructure.persistence.entity.OutboxEventJpaEntity;
-import pe.edu.unmsm.ciudadsana.auditoria.infrastructure.persistence.repository.OutboxEventJpaRepository;
+import pe.edu.unmsm.ciudadsana.auditoria.application.port.out.OutboxDispatcherPort;
 import pe.edu.unmsm.ciudadsana.rutas.application.command.ReoptimizarRutaCommand;
 import pe.edu.unmsm.ciudadsana.rutas.application.port.in.ReoptimizarRutaUseCase;
 import pe.edu.unmsm.ciudadsana.shared.result.Result;
@@ -18,48 +17,40 @@ import java.util.List;
 public class OutboxDispatcher {
 
     private static final Logger log = LoggerFactory.getLogger(OutboxDispatcher.class);
-    private static final String PENDIENTE = "PENDIENTE";
     private static final String ALERTA_CRITICA = "AlertaCriticaDetectadaEvent";
 
-    private final OutboxEventJpaRepository outboxRepo;
+    private final OutboxDispatcherPort outboxPort;
     private final ReoptimizarRutaUseCase reoptimizarUseCase;
 
-    public OutboxDispatcher(OutboxEventJpaRepository outboxRepo,
+    public OutboxDispatcher(OutboxDispatcherPort outboxPort,
                              ReoptimizarRutaUseCase reoptimizarUseCase) {
-        this.outboxRepo = outboxRepo;
+        this.outboxPort = outboxPort;
         this.reoptimizarUseCase = reoptimizarUseCase;
     }
 
     @Scheduled(fixedDelayString = "${outbox.dispatcher.interval-ms:5000}")
     @Transactional
     public void dispatch() {
-        List<OutboxEventJpaEntity> pendientes = outboxRepo.findByEstadoOrderByCreadoEnAsc(PENDIENTE);
-        for (OutboxEventJpaEntity evento : pendientes) {
+        List<OutboxDispatcherPort.OutboxEventView> pendientes = outboxPort.findPendientes();
+        for (OutboxDispatcherPort.OutboxEventView evento : pendientes) {
             try {
-                if (ALERTA_CRITICA.equals(evento.getEventType())) {
+                if (ALERTA_CRITICA.equals(evento.eventType())) {
                     procesarAlertaCritica(evento);
                 } else {
                     // Tipo no reconocido — marcar como publicado (no hay handler para él)
-                    marcarPublicado(evento);
+                    outboxPort.marcarPublicado(evento.id(), Instant.now());
                 }
             } catch (Exception e) {
-                log.error("Error procesando OutboxEvent {}: {}", evento.getId(), e.getMessage(), e);
-                marcarError(evento, e.getMessage());
+                log.error("Error procesando OutboxEvent {}: {}", evento.id(), e.getMessage(), e);
+                outboxPort.marcarError(evento.id(), e.getMessage());
             }
         }
     }
 
-    private void procesarAlertaCritica(OutboxEventJpaEntity evento) {
-        // aggregateId es el rutaId, tenantId es el tenantId
-        // Llamada mínima sin unidades/zonas — ReoptimizarRutaCommandHandler
-        // busca la ruta por id y usa los datos de la ruta existente.
-        // Para MVP: listas vacías de unidades/zonas — el handler las recibe del request
-        // en este caso no hay request body, así que se pasa listas vacías y el handler
-        // intentará reoptimizar (si el optimizador no recibe unidades, puede fallar —
-        // se registra el error en el outbox).
+    private void procesarAlertaCritica(OutboxDispatcherPort.OutboxEventView evento) {
         ReoptimizarRutaCommand cmd = new ReoptimizarRutaCommand(
-                evento.getTenantId(),
-                evento.getAggregateId(),
+                evento.tenantId(),
+                evento.aggregateId(),
                 List.of(),   // unidades — vacío en dispatch automático (MVP)
                 List.of(),   // zonas — vacío en dispatch automático (MVP)
                 List.of(),   // alertasCriticas
@@ -68,24 +59,12 @@ public class OutboxDispatcher {
         );
         Result<?> resultado = reoptimizarUseCase.reoptimizar(cmd);
         if (resultado.isSuccess()) {
-            marcarPublicado(evento);
-            log.info("OutboxEvent {} procesado: ruta {} reoptimizada", evento.getId(), evento.getAggregateId());
+            outboxPort.marcarPublicado(evento.id(), Instant.now());
+            log.info("OutboxEvent {} procesado: ruta {} reoptimizada", evento.id(), evento.aggregateId());
         } else {
             String msg = resultado.getError().message();
-            marcarError(evento, msg);
-            log.warn("OutboxEvent {} falló reoptimización: {}", evento.getId(), msg);
+            outboxPort.marcarError(evento.id(), msg);
+            log.warn("OutboxEvent {} falló reoptimización: {}", evento.id(), msg);
         }
-    }
-
-    private void marcarPublicado(OutboxEventJpaEntity evento) {
-        evento.setEstado("PUBLICADO");
-        evento.setPublicadoEn(Instant.now());
-        outboxRepo.save(evento);
-    }
-
-    private void marcarError(OutboxEventJpaEntity evento, String mensaje) {
-        evento.setEstado("ERROR");
-        evento.setErrorMensaje(mensaje != null ? mensaje.substring(0, Math.min(mensaje.length(), 500)) : "Error desconocido");
-        outboxRepo.save(evento);
     }
 }

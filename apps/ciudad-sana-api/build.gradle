@@ -39,6 +39,7 @@ dependencies {
     implementation project(':modules:rutas:rutas-interfaces')
     implementation project(':modules:kpi:kpi-infrastructure')
     implementation project(':modules:kpi:kpi-interfaces')
+    implementation project(':modules:auditoria:auditoria-application')
     implementation project(':modules:auditoria:auditoria-infrastructure')
     implementation project(':modules:auditoria:auditoria-interfaces')
 
