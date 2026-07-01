@@ -29,6 +29,7 @@ dependencies {
     implementation project(':modules:ciudadano:ciudadano-interfaces')
     implementation project(':modules:integracion:integracion-infrastructure')
     implementation project(':modules:integracion:integracion-interfaces')
+    implementation project(':modules:rutas:rutas-application')
     implementation project(':modules:rutas:rutas-infrastructure')
     implementation project(':modules:rutas:rutas-interfaces')
     implementation project(':modules:kpi:kpi-infrastructure')
