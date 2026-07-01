@@ -42,6 +42,11 @@ public class Deposito {
         return new Deposito(id, tenantId, distritoId, nombre, tipo, estado, creadoEn);
     }
 
+    public void desactivar() {
+        if (estado == EstadoDeposito.INACTIVO) throw new IllegalStateException("El depósito ya está INACTIVO");
+        this.estado = EstadoDeposito.INACTIVO;
+    }
+
     public DepositoId getId() { return id; }
     public TenantId getTenantId() { return tenantId; }
     public DistritoId getDistritoId() { return distritoId; }

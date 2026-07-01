@@ -6,15 +6,18 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import pe.edu.unmsm.ciudadsana.operacion.application.command.ActualizarZonaCommand;
 import pe.edu.unmsm.ciudadsana.operacion.application.command.DesactivarZonaCommand;
 import pe.edu.unmsm.ciudadsana.operacion.application.command.RegistrarZonaCommand;
 import pe.edu.unmsm.ciudadsana.operacion.application.dto.ZonaResponseDto;
+import pe.edu.unmsm.ciudadsana.operacion.application.port.in.ActualizarZonaUseCase;
 import pe.edu.unmsm.ciudadsana.operacion.application.port.in.DesactivarZonaUseCase;
 import pe.edu.unmsm.ciudadsana.operacion.application.port.in.ListarZonasUseCase;
 import pe.edu.unmsm.ciudadsana.operacion.application.port.in.ObtenerZonaUseCase;
 import pe.edu.unmsm.ciudadsana.operacion.application.port.in.RegistrarZonaUseCase;
 import pe.edu.unmsm.ciudadsana.operacion.application.query.ListarZonasQuery;
 import pe.edu.unmsm.ciudadsana.operacion.application.query.ObtenerZonaQuery;
+import pe.edu.unmsm.ciudadsana.operacion.interfaces.rest.request.ActualizarZonaRequest;
 import pe.edu.unmsm.ciudadsana.operacion.interfaces.rest.request.RegistrarZonaRequest;
 import pe.edu.unmsm.ciudadsana.shared.result.PageResult;
 import pe.edu.unmsm.ciudadsana.shared.security.context.CurrentUserProvider;
@@ -29,15 +32,17 @@ import java.util.UUID;
 public class ZonaController {
 
     private final RegistrarZonaUseCase registrarUseCase;
+    private final ActualizarZonaUseCase actualizarUseCase;
     private final ObtenerZonaUseCase obtenerUseCase;
     private final ListarZonasUseCase listarUseCase;
     private final DesactivarZonaUseCase desactivarUseCase;
     private final CurrentUserProvider currentUser;
 
-    public ZonaController(RegistrarZonaUseCase registrarUseCase, ObtenerZonaUseCase obtenerUseCase,
-                           ListarZonasUseCase listarUseCase, DesactivarZonaUseCase desactivarUseCase,
-                           CurrentUserProvider currentUser) {
+    public ZonaController(RegistrarZonaUseCase registrarUseCase, ActualizarZonaUseCase actualizarUseCase,
+                           ObtenerZonaUseCase obtenerUseCase, ListarZonasUseCase listarUseCase,
+                           DesactivarZonaUseCase desactivarUseCase, CurrentUserProvider currentUser) {
         this.registrarUseCase = registrarUseCase;
+        this.actualizarUseCase = actualizarUseCase;
         this.obtenerUseCase = obtenerUseCase;
         this.listarUseCase = listarUseCase;
         this.desactivarUseCase = desactivarUseCase;
@@ -51,6 +56,15 @@ public class ZonaController {
         var user = currentUser.requireCurrentUser();
         var cmd = new RegistrarZonaCommand(user.tenantId(), req.distritoId(), req.codigo(), req.nombre(), req.tipoZona(), req.prioridad());
         return ResultResponseMapper.toCreated(registrarUseCase.registrar(cmd));
+    }
+
+    @Operation(summary = "Actualizar prioridad de zona")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPERVISOR')")
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<ZonaResponseDto>> actualizar(@PathVariable UUID id,
+                                                                    @Valid @RequestBody ActualizarZonaRequest req) {
+        var user = currentUser.requireCurrentUser();
+        return ResultResponseMapper.toOk(actualizarUseCase.actualizar(new ActualizarZonaCommand(user.tenantId(), id, req.prioridad())));
     }
 
     @Operation(summary = "Obtener zona")

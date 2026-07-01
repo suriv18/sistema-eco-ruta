@@ -6,10 +6,12 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import pe.edu.unmsm.ciudadsana.operacion.application.command.CancelarTurnoCommand;
 import pe.edu.unmsm.ciudadsana.operacion.application.command.CrearTurnoCommand;
 import pe.edu.unmsm.ciudadsana.operacion.application.command.FinalizarTurnoCommand;
 import pe.edu.unmsm.ciudadsana.operacion.application.command.IniciarTurnoCommand;
 import pe.edu.unmsm.ciudadsana.operacion.application.dto.TurnoResponseDto;
+import pe.edu.unmsm.ciudadsana.operacion.application.port.in.CancelarTurnoUseCase;
 import pe.edu.unmsm.ciudadsana.operacion.application.port.in.CrearTurnoUseCase;
 import pe.edu.unmsm.ciudadsana.operacion.application.port.in.FinalizarTurnoUseCase;
 import pe.edu.unmsm.ciudadsana.operacion.application.port.in.IniciarTurnoUseCase;
@@ -35,16 +37,19 @@ public class TurnoController {
     private final ListarTurnosUseCase listarUseCase;
     private final IniciarTurnoUseCase iniciarUseCase;
     private final FinalizarTurnoUseCase finalizarUseCase;
+    private final CancelarTurnoUseCase cancelarUseCase;
     private final CurrentUserProvider currentUser;
 
     public TurnoController(CrearTurnoUseCase crearUseCase, ObtenerTurnoUseCase obtenerUseCase,
                             ListarTurnosUseCase listarUseCase, IniciarTurnoUseCase iniciarUseCase,
-                            FinalizarTurnoUseCase finalizarUseCase, CurrentUserProvider currentUser) {
+                            FinalizarTurnoUseCase finalizarUseCase, CancelarTurnoUseCase cancelarUseCase,
+                            CurrentUserProvider currentUser) {
         this.crearUseCase = crearUseCase;
         this.obtenerUseCase = obtenerUseCase;
         this.listarUseCase = listarUseCase;
         this.iniciarUseCase = iniciarUseCase;
         this.finalizarUseCase = finalizarUseCase;
+        this.cancelarUseCase = cancelarUseCase;
         this.currentUser = currentUser;
     }
 
@@ -89,5 +94,13 @@ public class TurnoController {
     public ResponseEntity<Void> finalizar(@PathVariable UUID id) {
         var user = currentUser.requireCurrentUser();
         return ResultResponseMapper.toNoContent(finalizarUseCase.finalizar(new FinalizarTurnoCommand(id, user.tenantId())));
+    }
+
+    @Operation(summary = "Cancelar turno")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPERVISOR')")
+    @PatchMapping("/{id}/cancelar")
+    public ResponseEntity<Void> cancelar(@PathVariable UUID id) {
+        var user = currentUser.requireCurrentUser();
+        return ResultResponseMapper.toNoContent(cancelarUseCase.cancelar(new CancelarTurnoCommand(id, user.tenantId())));
     }
 }

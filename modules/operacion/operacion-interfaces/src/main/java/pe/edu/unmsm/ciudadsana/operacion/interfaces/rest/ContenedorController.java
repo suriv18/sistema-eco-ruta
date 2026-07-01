@@ -11,8 +11,10 @@ import pe.edu.unmsm.ciudadsana.operacion.application.command.RegistrarContenedor
 import pe.edu.unmsm.ciudadsana.operacion.application.dto.ContenedorResponseDto;
 import pe.edu.unmsm.ciudadsana.operacion.application.port.in.CambiarEstadoContenedorUseCase;
 import pe.edu.unmsm.ciudadsana.operacion.application.port.in.ListarContenedoresUseCase;
+import pe.edu.unmsm.ciudadsana.operacion.application.port.in.ObtenerContenedorUseCase;
 import pe.edu.unmsm.ciudadsana.operacion.application.port.in.RegistrarContenedorUseCase;
 import pe.edu.unmsm.ciudadsana.operacion.application.query.ListarContenedoresQuery;
+import pe.edu.unmsm.ciudadsana.operacion.application.query.ObtenerContenedorQuery;
 import pe.edu.unmsm.ciudadsana.operacion.interfaces.rest.request.CambiarEstadoContenedorRequest;
 import pe.edu.unmsm.ciudadsana.operacion.interfaces.rest.request.RegistrarContenedorRequest;
 import pe.edu.unmsm.ciudadsana.shared.result.PageResult;
@@ -28,16 +30,27 @@ import java.util.UUID;
 public class ContenedorController {
 
     private final RegistrarContenedorUseCase registrarUseCase;
+    private final ObtenerContenedorUseCase obtenerUseCase;
     private final ListarContenedoresUseCase listarUseCase;
     private final CambiarEstadoContenedorUseCase cambiarEstadoUseCase;
     private final CurrentUserProvider currentUser;
 
-    public ContenedorController(RegistrarContenedorUseCase registrarUseCase, ListarContenedoresUseCase listarUseCase,
-                                 CambiarEstadoContenedorUseCase cambiarEstadoUseCase, CurrentUserProvider currentUser) {
+    public ContenedorController(RegistrarContenedorUseCase registrarUseCase, ObtenerContenedorUseCase obtenerUseCase,
+                                 ListarContenedoresUseCase listarUseCase, CambiarEstadoContenedorUseCase cambiarEstadoUseCase,
+                                 CurrentUserProvider currentUser) {
         this.registrarUseCase = registrarUseCase;
+        this.obtenerUseCase = obtenerUseCase;
         this.listarUseCase = listarUseCase;
         this.cambiarEstadoUseCase = cambiarEstadoUseCase;
         this.currentUser = currentUser;
+    }
+
+    @Operation(summary = "Obtener contenedor")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPERVISOR','OPERADOR')")
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<ContenedorResponseDto>> obtener(@PathVariable UUID id) {
+        var user = currentUser.requireCurrentUser();
+        return ResultResponseMapper.toOk(obtenerUseCase.obtener(new ObtenerContenedorQuery(id, user.tenantId())));
     }
 
     @Operation(summary = "Registrar contenedor")

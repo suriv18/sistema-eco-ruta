@@ -6,8 +6,12 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import pe.edu.unmsm.ciudadsana.operacion.application.command.ActivarDistritoCommand;
+import pe.edu.unmsm.ciudadsana.operacion.application.command.DesactivarDistritoCommand;
 import pe.edu.unmsm.ciudadsana.operacion.application.command.RegistrarDistritoCommand;
 import pe.edu.unmsm.ciudadsana.operacion.application.dto.DistritoResponseDto;
+import pe.edu.unmsm.ciudadsana.operacion.application.port.in.ActivarDistritoUseCase;
+import pe.edu.unmsm.ciudadsana.operacion.application.port.in.DesactivarDistritoUseCase;
 import pe.edu.unmsm.ciudadsana.operacion.application.port.in.ListarDistritosUseCase;
 import pe.edu.unmsm.ciudadsana.operacion.application.port.in.ObtenerDistritoUseCase;
 import pe.edu.unmsm.ciudadsana.operacion.application.port.in.RegistrarDistritoUseCase;
@@ -29,15 +33,21 @@ public class DistritoController {
     private final RegistrarDistritoUseCase registrarUseCase;
     private final ObtenerDistritoUseCase obtenerUseCase;
     private final ListarDistritosUseCase listarUseCase;
+    private final DesactivarDistritoUseCase desactivarUseCase;
+    private final ActivarDistritoUseCase activarUseCase;
     private final CurrentUserProvider currentUser;
 
     public DistritoController(RegistrarDistritoUseCase registrarUseCase,
                                ObtenerDistritoUseCase obtenerUseCase,
                                ListarDistritosUseCase listarUseCase,
+                               DesactivarDistritoUseCase desactivarUseCase,
+                               ActivarDistritoUseCase activarUseCase,
                                CurrentUserProvider currentUser) {
         this.registrarUseCase = registrarUseCase;
         this.obtenerUseCase = obtenerUseCase;
         this.listarUseCase = listarUseCase;
+        this.desactivarUseCase = desactivarUseCase;
+        this.activarUseCase = activarUseCase;
         this.currentUser = currentUser;
     }
 
@@ -66,5 +76,21 @@ public class DistritoController {
             @RequestParam(defaultValue = "20") int size) {
         var user = currentUser.requireCurrentUser();
         return ResultResponseMapper.toOk(listarUseCase.listar(new ListarDistritosQuery(user.tenantId(), page, size)));
+    }
+
+    @Operation(summary = "Desactivar distrito")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{id}/desactivar")
+    public ResponseEntity<Void> desactivar(@PathVariable UUID id) {
+        var user = currentUser.requireCurrentUser();
+        return ResultResponseMapper.toNoContent(desactivarUseCase.desactivar(new DesactivarDistritoCommand(id, user.tenantId())));
+    }
+
+    @Operation(summary = "Activar distrito")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{id}/activar")
+    public ResponseEntity<Void> activar(@PathVariable UUID id) {
+        var user = currentUser.requireCurrentUser();
+        return ResultResponseMapper.toNoContent(activarUseCase.activar(new ActivarDistritoCommand(id, user.tenantId())));
     }
 }
